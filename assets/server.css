@@ -1,0 +1,350 @@
+.nav a {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    color: #ddddea;
+    padding: 12px;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 16px;
+}
+.nav a:hover {
+    background: #36354e;
+    color: white;
+}
+.nav a.active {
+    background: #ececf6;
+    color: #3336a0;
+}
+.menu-toggle {
+    display: block !important;
+}
+.topbar {
+    gap: 16px;
+}
+.breadcrumb {
+    margin-right: auto;
+}
+.top-actions form {
+    margin: 0;
+}
+.logout {
+    font-size: 13px;
+    background: transparent;
+    color: #fff;
+    border-color: #606075;
+    white-space: nowrap;
+}
+.logout:hover {
+    background: #39384e;
+}
+.button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    border: 1px solid var(--line);
+    border-radius: 5px;
+    background: #fff;
+    padding: 9px 14px;
+    text-decoration: none;
+    color: var(--ink);
+    line-height: 1.65;
+    font-size: 16px;
+}
+.button.primary {
+    background: var(--green);
+    border-color: var(--green);
+    color: white;
+}
+.button:hover {
+    background: var(--wash);
+    border-color: #b6b7d6;
+}
+.button.primary:hover {
+    background: #3437b6;
+}
+.button.compact {
+    padding: 5px 9px;
+    font-size: 14px;
+    white-space: nowrap;
+}
+.pagination .button.current {
+    color: white;
+    background: var(--green);
+}
+.pagination {
+    flex-wrap: wrap;
+}
+.page-intro {
+    flex-wrap: wrap;
+}
+.page-intro .actions {
+    align-self: center;
+}
+.form-page {
+    max-width: 960px;
+}
+.form-grid {
+    margin-bottom: 20px;
+}
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    flex-wrap: wrap;
+    padding-top: 20px;
+    margin-top: 20px;
+    border-top: 1px solid var(--line);
+}
+.server-table-scroll {
+    max-width: 100%;
+    overflow: auto;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+}
+.server-table {
+    min-width: 750px;
+    table-layout: auto;
+}
+.server-table th {
+    white-space: nowrap;
+}
+.server-table td {
+    min-width: 130px;
+}
+.ledger-table {
+    table-layout: auto;
+    min-width: 1900px;
+}
+.ledger-table td {
+    min-width: 120px;
+}
+.ledger-table td:nth-child(4) {
+    min-width: 310px;
+}
+.listing-panel {
+    min-width: 0;
+}
+.filter-form {
+    margin: 0 0 24px;
+    grid-template-columns: minmax(180px, 2fr) repeat(3, minmax(140px, 1fr));
+}
+.filter-actions {
+    align-self: end;
+    display: flex;
+    gap: 8px;
+}
+.filter-form input,
+.filter-form select {
+    margin-top: 5px;
+}
+.auth-main {
+    max-width: 770px;
+    margin: 50px auto;
+    padding: 0 20px;
+}
+.auth-brand {
+    font-size: 16px;
+    margin-bottom: 32px;
+    color: var(--muted);
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+.auth-panel .form-grid {
+    grid-template-columns: 1fr;
+}
+.auth-links {
+    border-top: 1px solid var(--line);
+    padding-top: 20px;
+    margin-top: 24px;
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+.error-notice {
+    border-color: #a34343;
+    background: #fff1ed;
+    color: #853b35;
+}
+.auth-panel {
+    padding: 30px;
+}
+.check-label {
+    display: flex;
+    gap: 8px;
+    font-size: 14px;
+    align-items: center;
+    margin-bottom: 10px;
+}
+.check-label input {
+    width: 18px;
+    min-height: 18px;
+}
+.audit-json {
+    max-width: 600px;
+    max-height: 400px;
+    overflow: auto;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    font: 13px/1.7 monospace;
+    background: #f5f5fa;
+    padding: 12px;
+}
+.detail-grid {
+    margin-top: 20px;
+}
+.sidebar {
+    transition: transform 0.18s ease;
+}
+.shell {
+    transition: grid-template-columns 0.18s ease;
+}
+.sidebar-collapsed .shell {
+    grid-template-columns: 0 minmax(0, 1fr);
+}
+.sidebar-collapsed .sidebar {
+    transform: translateX(-100%);
+}
+.server-table input,
+.server-table select {
+    min-width: 150px;
+}
+.server-table .check-label input {
+    min-width: 18px;
+}
+.report-row {
+    flex-wrap: wrap;
+}
+.report-row > * {
+    overflow-wrap: anywhere;
+    min-width: 0;
+}
+@media (max-width: 1100px) {
+    .filter-form {
+        grid-template-columns: 1fr 1fr;
+    }
+    .account-copy {
+        max-width: 150px;
+    }
+    .topbar {
+        padding: 0 18px;
+    }
+    .main {
+        padding: 24px 20px;
+    }
+}
+@media (max-width: 850px) {
+    .shell,
+    .sidebar-collapsed .shell {
+        grid-template-columns: 1fr;
+    }
+    .workspace {
+        grid-column: 1;
+    }
+    .sidebar-collapsed .sidebar.open {
+        transform: translateX(0);
+    }
+    .sidebar.open {
+        transform: translateX(0);
+    }
+    .mobile-shade.open {
+        display: block;
+    }
+    .topbar .breadcrumb {
+        font-size: 13px;
+    }
+}
+@media (max-width: 600px) {
+    .filter-form {
+        grid-template-columns: 1fr;
+    }
+    .filter-actions .primary {
+        flex: 1;
+    }
+    .main {
+        padding: 22px 14px;
+    }
+    .listing-panel {
+        padding: 14px;
+    }
+    .topbar {
+        gap: 6px;
+        padding: 0 10px;
+    }
+    .top-actions {
+        gap: 8px;
+    }
+    .top-actions .avatar {
+        display: none;
+    }
+    .logout {
+        padding: 7px;
+        font-size: 12px;
+    }
+    .page-intro h1 {
+        font-size: 27px;
+    }
+    .auth-main {
+        margin-top: 28px;
+        padding: 0 16px;
+    }
+    .auth-panel {
+        padding: 20px;
+    }
+    .page-intro .actions {
+        width: 100%;
+    }
+    .actions .button {
+        font-size: 14px;
+        flex: 1;
+    }
+    .form-actions .button,
+    .form-actions button {
+        flex: 1;
+    }
+    .table-footer {
+        gap: 12px;
+    }
+    .server-table {
+        min-width: 720px;
+    }
+    .detail-grid {
+        grid-template-columns: 1fr;
+    }
+}
+@media (prefers-reduced-motion: reduce) {
+    .sidebar,
+    .shell {
+        transition: none;
+    }
+}
+.server-table-scroll {
+    position: relative;
+}
+
+.reference-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 24px;
+}
+.reference-filter {
+    display: flex;
+    align-items: end;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+.reference-filter label {
+    flex: 1;
+    min-width: 180px;
+}
+.reference-tabs .button {
+    font-size: 15px;
+}
+.reference-filter input,
+.reference-filter select {
+    display: block;
+}

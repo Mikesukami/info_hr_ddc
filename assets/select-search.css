@@ -1,0 +1,87 @@
+/* select เดิมซ่อนเฉพาะเมื่อ JavaScript สร้างตัวค้นหาสำเร็จ */
+.search-select-native {
+    position: absolute;
+    width: 1px !important;
+    height: 1px !important;
+    min-height: 0 !important;
+    padding: 0 !important;
+    clip-path: inset(50%);
+    overflow: hidden;
+}
+.search-select {
+    position: relative;
+    margin-top: 5px;
+    min-width: 0;
+}
+.search-select-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+    min-height: 46px;
+    text-align: left;
+    font-weight: 400;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    border-color: #b9bed2;
+}
+.search-select-trigger::after {
+    content: "⌄";
+    flex-shrink: 0;
+    color: #6565a0;
+}
+.search-select-trigger[aria-expanded="true"] {
+    border-color: #4549d9;
+    box-shadow: 0 0 0 3px #4549d91a;
+}
+.search-select-popup {
+    position: absolute;
+    z-index: 15;
+    top: calc(100% + 6px);
+    left: 0;
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #cdd0e5;
+    border-radius: 10px;
+    background: #fff;
+    box-shadow: 0 10px 32px #201f3026;
+}
+.search-select-options {
+    max-height: 230px;
+    overflow: auto;
+    overscroll-behavior: contain;
+    margin-top: 8px;
+}
+.search-select-option {
+    padding: 10px;
+    border-radius: 6px;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    cursor: pointer;
+}
+.search-select-option:hover,
+.search-select-option.highlighted {
+    background: #eeeefe;
+    color: #3438a4;
+}
+.search-select-option[aria-selected="true"] {
+    font-weight: 500;
+    border-left: 3px solid #4549d9;
+    background: #f3f3ff;
+}
+.search-select-status {
+    border-top: 1px solid #ececf5;
+    margin-top: 8px;
+    padding-top: 8px;
+    font-size: 12px;
+    color: #606579;
+}
+@media (max-width: 650px) {
+    .search-select-options {
+        max-height: 180px;
+    }
+    .search-select-popup {
+        padding: 8px;
+    }
+}

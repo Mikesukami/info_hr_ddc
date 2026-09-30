@@ -1,0 +1,10 @@
+Options -Indexes
+RewriteEngine On
+RewriteRule (^|/)\. - [F,L]
+RewriteRule ^(?:app|config|database|storage)(?:/|$) - [F,L,NC]
+<FilesMatch "(?i)\.(?:sql|md|json|xlsx|cjs|py|ps1|ini|log|bak|zip)$">
+    Require all denied
+</FilesMatch>
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options "nosniff"
+</IfModule>
