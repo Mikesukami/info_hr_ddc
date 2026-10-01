@@ -48,12 +48,15 @@ $pendingUserRequests = pending_user_requests();
     <script src="assets/ui.js?v=4" defer></script>
     <link rel="stylesheet" href="assets/select-search.css?v=1">
     <script src="assets/select-search.js?v=1" defer></script>
+    <?php if ($page === "login" && !$user): ?>
+        <link rel="stylesheet" href="assets/login.css?v=2">
+    <?php endif; ?>
     <?php if ($page === "ledger"): ?>
         <link rel="stylesheet" href="assets/ledger-display.css?v=3">
         <script src="assets/ledger-display.js?v=2" defer></script>
     <?php endif; ?>
 </head>
-<body>
+<body<?= $page === "login" && !$user ? ' class="login-page"' : "" ?>>
 <a class="skip" href="#main">ข้ามไปยังเนื้อหา</a>
 
 <?php if ($user): ?>

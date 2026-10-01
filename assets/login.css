@@ -1,0 +1,70 @@
+/* เฉพาะหน้า Login: ใช้รูปแบบฟอร์มเดิม และเพิ่มแสงสีอ่อนด้านหลัง */
+.login-page {
+    min-height: 100svh;
+    background: #fbfaff;
+    isolation: isolate;
+}
+
+/* ชั้นแสงไม่รับคลิก และไม่ทำให้หน้าจอมีแถบเลื่อนเพิ่ม */
+.login-page::before,
+.login-page::after {
+    content: "";
+    position: fixed;
+    inset: -18%;
+    z-index: -1;
+    pointer-events: none;
+    background-repeat: no-repeat;
+}
+
+.login-page::before {
+    background-image:
+        radial-gradient(ellipse at 5% 8%, #ccc9ffb3, transparent 48%),
+        radial-gradient(ellipse at 92% 94%, #ffd7ef99, transparent 48%),
+        radial-gradient(ellipse at 68% 2%, #dfd9ff80, transparent 38%);
+    transform-origin: 25% 30%;
+    animation: login-aurora 28s ease-in-out infinite alternate;
+}
+
+.login-page::after {
+    background-image:
+        radial-gradient(ellipse at 20% 28%, #d9f5ec80, transparent 32%),
+        radial-gradient(ellipse at 78% 72%, #ece4ff66, transparent 38%);
+    animation: login-soft-light 34s ease-in-out infinite alternate;
+}
+
+.login-page .auth-main {
+    position: relative;
+    z-index: 1;
+}
+
+/* เคลื่อนเฉพาะชั้นตกแต่ง ฟอร์มและตัวอักษรอยู่นิ่ง */
+@keyframes login-aurora {
+    from {
+        transform: scale(1.08) translate(-2%, -1%) rotate(-2deg);
+        opacity: 0.85;
+    }
+    to {
+        transform: scale(1.16) translate(2%, 2%) rotate(2deg);
+        opacity: 1;
+    }
+}
+
+@keyframes login-soft-light {
+    from {
+        transform: scale(1.1) translate(2%, -2%);
+        opacity: 0.6;
+    }
+    to {
+        transform: scale(1.18) translate(-3%, 3%);
+        opacity: 0.95;
+    }
+}
+
+/* เคารพการตั้งค่าลดการเคลื่อนไหวของผู้ใช้งาน */
+@media (prefers-reduced-motion: reduce) {
+    .login-page::before,
+    .login-page::after {
+        animation: none;
+        transform: none;
+    }
+}
