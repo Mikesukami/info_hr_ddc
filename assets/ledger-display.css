@@ -1,0 +1,170 @@
+.ledger-display-tools {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 12px 14px;
+    margin-bottom: 16px;
+    background: #f8f9fd;
+    border: 1px solid #e0e2ef;
+    border-radius: 8px;
+}
+.ledger-display-label {
+    font-size: 14px;
+    font-weight: 500;
+}
+.ledger-font-tools {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.ledger-display-tools button {
+    min-height: 34px;
+    padding: 5px 10px;
+    font-size: 13px;
+}
+.ledger-font-tools output {
+    min-width: 42px;
+    text-align: center;
+    font-size: 13px;
+}
+.ledger-density-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 14px;
+}
+.ledger-density-label input {
+    width: 16px;
+    min-height: 16px;
+    height: 16px;
+    margin: 0;
+}
+.ledger-display-tools small {
+    font-size: 12px;
+}
+
+.ledger-font-10 {
+    --ledger-font: 10px;
+    --ledger-scale: 0.667;
+}
+.ledger-font-11 {
+    --ledger-font: 11px;
+    --ledger-scale: 0.733;
+}
+.ledger-font-12 {
+    --ledger-font: 12px;
+    --ledger-scale: 0.8;
+}
+.ledger-font-13 {
+    --ledger-font: 13px;
+    --ledger-scale: 0.867;
+}
+.ledger-font-14 {
+    --ledger-font: 14px;
+    --ledger-scale: 0.933;
+}
+.ledger-font-15 {
+    --ledger-font: 15px;
+    --ledger-scale: 1;
+}
+.ledger-font-16 {
+    --ledger-font: 16px;
+    --ledger-scale: 1.067;
+}
+.ledger-font-17 {
+    --ledger-font: 17px;
+    --ledger-scale: 1.133;
+}
+.ledger-font-18 {
+    --ledger-font: 18px;
+    --ledger-scale: 1.2;
+}
+
+.ledger-table[class*="ledger-font-"] {
+    width: calc(1900px * var(--ledger-scale));
+    min-width: calc(1900px * var(--ledger-scale));
+}
+.ledger-table[class*="ledger-font-"] th,
+.ledger-table[class*="ledger-font-"] td,
+.ledger-table[class*="ledger-font-"] .person {
+    font-size: var(--ledger-font);
+    line-height: 1.55;
+}
+.ledger-table[class*="ledger-font-"] td {
+    min-width: calc(120px * var(--ledger-scale));
+}
+.ledger-table[class*="ledger-font-"] td:nth-child(4) {
+    min-width: calc(310px * var(--ledger-scale));
+}
+/* ให้ชื่อและหน่วยงานขยายคอลัมน์ตามข้อความ ไม่ตัดคำหรือตัดข้อมูลออก */
+.ledger-table[class*="ledger-font-"] td:nth-child(5) {
+    min-width: calc(220px * var(--ledger-scale));
+}
+.ledger-table[class*="ledger-font-"] td:nth-child(5) .person,
+.ledger-table[class*="ledger-font-"] td:nth-child(5) .subline,
+.ledger-table[class*="ledger-font-"] td:nth-child(2),
+.ledger-table[class*="ledger-font-"] td:nth-child(3),
+.ledger-table[class*="ledger-font-"] td:nth-child(6),
+.ledger-table[class*="ledger-font-"] th {
+    white-space: nowrap;
+    overflow-wrap: normal;
+    word-break: normal;
+}
+.ledger-table[class*="ledger-font-"] td:nth-child(1) {
+    min-width: calc(75px * var(--ledger-scale));
+    white-space: nowrap;
+}
+.ledger-table[class*="ledger-font-"] td:nth-child(8) {
+    min-width: calc(4ch + 24px);
+    white-space: nowrap;
+    overflow-wrap: normal;
+    word-break: normal;
+}
+.ledger-table[class*="ledger-font-"] td:nth-child(9) {
+    min-width: calc(80px * var(--ledger-scale));
+}
+.ledger-table[class*="ledger-font-"] .subline {
+    font-size: max(10px, calc(var(--ledger-font) - 1px));
+    line-height: 1.5;
+}
+.ledger-table[class*="ledger-font-"] .badge,
+.ledger-table[class*="ledger-font-"] .button.compact {
+    font-size: max(10px, calc(var(--ledger-font) - 1px));
+}
+.ledger-table.ledger-compact th,
+.ledger-table.ledger-compact td {
+    padding: 6px 8px;
+}
+.ledger-table.ledger-compact .subline {
+    margin-top: 2px;
+}
+.ledger-table.ledger-compact .badge {
+    padding: 3px 8px;
+}
+.ledger-table.ledger-compact .button.compact {
+    min-height: 30px;
+    padding: 3px 7px;
+}
+
+@media print {
+    .ledger-table[class*="ledger-font-"] td,
+    .ledger-table[class*="ledger-font-"] td:nth-child(5) .person,
+    .ledger-table[class*="ledger-font-"] td:nth-child(5) .subline {
+        white-space: normal;
+    }
+    .ledger-display-tools {
+        display: none;
+    }
+    .ledger-table[class*="ledger-font-"] {
+        width: 100%;
+        min-width: 0;
+    }
+    .ledger-table[class*="ledger-font-"] th,
+    .ledger-table[class*="ledger-font-"] td,
+    .ledger-table[class*="ledger-font-"] .person,
+    .ledger-table[class*="ledger-font-"] .subline {
+        font-size: 9pt;
+        min-width: 0;
+    }
+}

@@ -27,6 +27,18 @@ function registry_view(bool $ledger): void
     }
     echo '<section class="panel listing-panel">';
     filter_form($page);
+    if ($ledger) {
+        echo '<div class="ledger-display-tools" id="ledgerDisplayTools" hidden>' .
+            '<span class="ledger-display-label">การแสดงตาราง</span>' .
+            '<div class="ledger-font-tools" role="group" aria-label="ขนาดตัวอักษรตาราง">' .
+            '<button type="button" id="ledgerFontDecrease" aria-label="ลดขนาดตัวอักษร">A−</button>' .
+            '<output id="ledgerFontSize" aria-live="polite">15 px</output>' .
+            '<button type="button" id="ledgerFontIncrease" aria-label="เพิ่มขนาดตัวอักษร">A+</button>' .
+            '</div><label class="ledger-density-label">' .
+            '<input type="checkbox" id="ledgerCompact"> แถวกระชับ</label>' .
+            '<button type="button" id="ledgerDisplayReset">คืนค่าเดิม</button>' .
+            '<small>ปรับเฉพาะตารางนี้ · เลือกจำนวนต่อหน้าที่ตัวกรองด้านบน</small></div>';
+    }
     if (!$data["items"]) {
         echo '<div class="empty"><h2>ยังไม่มีรายการที่ตรงกับเงื่อนไข</h2><p>เพิ่มเรื่อ' .
             "งใหม่ หรือปรับคำค้นและตัวกรอง</p></div>";
