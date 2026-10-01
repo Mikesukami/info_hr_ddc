@@ -210,6 +210,21 @@ function badge_html(string $status): string
 }
 
 // ป้ายข้อมูลอ้างอิง: ใช้ทั้งสีและข้อความ ไม่ใช้สีเพียงอย่างเดียว
+function entry_subject_html(array $entry): string
+{
+    $heading = match ($entry["kind"]) {
+        "return" => "รายงานตัวกลับ",
+        "cancel" => "ยกเลิกเรื่อง",
+        default => "ช่วงที่ " . $entry["ordinal"],
+    };
+    // แยกวันที่และรายละเอียดออกจากตัวหนา โดยคงข้อความเดิมครบถ้วน
+    $details = substr(entry_subject($entry), strlen($heading));
+    return "<strong>" .
+        h($heading) .
+        "</strong>" .
+        h($details);
+}
+
 function active_badge(bool $active): string
 {
     return '<span class="badge ' .
@@ -356,7 +371,7 @@ function entry_fields(array $entry = [], string $kind = "period"): void
         echo input_field(
             $kind === "return" ? "วันที่รายงานตัวกลับ (พ.ศ.)" : "วันที่ยกเลิก (พ.ศ.)",
             "action_date",
-            date("Y-m-d"),
+            $entry["action_date"] ?? date("Y-m-d"),
             "date",
         );
     }

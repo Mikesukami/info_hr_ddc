@@ -19,6 +19,8 @@ function case_select(): string
 {
     return <<<'SQL'
     SELECT c.*,
+    creator.name AS creator_name,
+    editor.name AS editor_name,
     t.name AS type_name,
     t.form_kind,
     co.label AS country,
@@ -43,6 +45,8 @@ function case_select(): string
     ELSE 'active'
     END AS status
     FROM leave_cases c
+    LEFT JOIN users creator ON creator.id=c.created_by
+    LEFT JOIN users editor ON editor.id=c.updated_by
     JOIN activity_types t
     ON t.id=c.type_id
     JOIN reference_values u
@@ -550,10 +554,28 @@ function period_save_action(): void
 function terminal_save_action(string $kind): void
 {
     $caseId = positive_id($_POST["case_id"] ?? null);
+    $entryId = empty($_POST["entry_id"]) ? null : positive_id($_POST["entry_id"]);
+    if ($entryId) {
+        allowed(["admin", "superAdmin"]);
+        if ($kind !== "return") {
+            throw new ValidationException("แก้ไขได้เฉพาะรายการรายงานตัวกลับ");
+        }
+    }
     $data = entry_input($kind);
-    transaction(function () use ($caseId, $data, $kind) {
+    transaction(function () use ($caseId, $data, $kind, $entryId) {
         lock_case($caseId);
-        if (row("SELECT id FROM record_entries WHERE terminal_case_id=?", [$caseId])) {
+        $terminal = row("SELECT * FROM record_entries WHERE terminal_case_id=?", [
+            $caseId,
+        ]);
+        if (
+            $entryId &&
+            (!$terminal ||
+                (int) $terminal["id"] !== $entryId ||
+                $terminal["kind"] !== "return")
+        ) {
+            throw new ValidationException("ไม่พบรายการรายงานตัวกลับในแฟ้มนี้");
+        }
+        if (!$entryId && $terminal) {
             throw new ValidationException("เรื่องนี้รายงานตัวหรือยกเลิกแล้ว");
         }
         $latest = row(
@@ -567,25 +589,41 @@ function terminal_save_action(string $kind): void
             SQL,
             [$caseId],
         );
-        if ($kind === "return" && $data["action_date"] < $latest["start_date"]) {
+        if (
+            $kind === "return" &&
+            (!$latest || $data["action_date"] < $latest["start_date"])
+        ) {
             throw new ValidationException("วันรายงานตัวต้องไม่ก่อนวันเริ่มช่วงล่าสุด");
         }
-        $id = insert_data(
-            "record_entries",
-            $data + [
-                "case_id" => $caseId,
-                "ordinal" => null,
-                "created_by" => actor(),
-                "updated_by" => actor(),
-            ],
-        );
+        if ($entryId) {
+            $id = $entryId;
+            update_data("record_entries", $id, $data + ["updated_by" => actor()]);
+        } else {
+            $id = insert_data(
+                "record_entries",
+                $data + [
+                    "case_id" => $caseId,
+                    "ordinal" => null,
+                    "created_by" => actor(),
+                    "updated_by" => actor(),
+                ],
+            );
+        }
         touch_case($caseId);
         audit(
-            $kind === "return" ? "case_returned" : "case_cancelled",
+            $entryId
+                ? "return_updated"
+                : ($kind === "return"
+                    ? "case_returned"
+                    : "case_cancelled"),
             "entry",
             $id,
-            $kind === "return" ? "รายงานตัวกลับ" : "ยกเลิกเรื่อง",
-            null,
+            $entryId
+                ? "แก้ไขรายงานตัวกลับ"
+                : ($kind === "return"
+                    ? "รายงานตัวกลับ"
+                    : "ยกเลิกเรื่อง"),
+            $entryId ? $terminal : null,
             $data,
         );
     });

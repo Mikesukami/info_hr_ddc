@@ -174,7 +174,7 @@ try {
                 $params["id"] = (int) $_POST["case_id"];
             }
             if (
-                $action === "period_save" &&
+                in_array($action, ["period_save", "return_save"], true) &&
                 !empty($_POST["entry_id"]) &&
                 is_scalar($_POST["entry_id"])
             ) {

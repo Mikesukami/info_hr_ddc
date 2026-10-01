@@ -35,9 +35,12 @@ function users_view(): void
         "id,username,name,position,phone,role,state,session_version,created_at",
         "state='pending' DESC,id DESC",
     );
-    echo '<section class="panel"><div class="server-table-scroll"><table class="se' .
-        'rver-table"><thead><tr><th>ผู้ใช้งาน</th><th>ตำแหน่ง / โทร</th><th>บทบาท' .
-        " / สถานะ</th><th>จัดการ</th></tr></thead><tbody>";
+    echo '<section class="panel users-panel"><div class="server-table-scroll" ' .
+        'tabindex="0" role="region" aria-label="ตารางผู้ใช้งาน เลื่อนซ้ายขวาได้">' .
+        '<table class="server-table users-table"><thead><tr>' .
+        '<th scope="col">ผู้ใช้งาน</th><th scope="col">ตำแหน่ง / โทร</th>' .
+        '<th scope="col">บทบาท / สถานะ</th><th scope="col">จัดการบัญชี</th>' .
+        '</tr></thead><tbody>';
     $states = [
         "pending" => "รออนุมัติ",
         "approved" => "อนุมัติแล้ว",
@@ -57,7 +60,7 @@ function users_view(): void
             h(ROLE_LABELS[$u["role"]]) .
             '<small class="subline">' .
             h($states[$u["state"]]) .
-            "</small></td><td>";
+            '</small></td><td><div class="user-row-actions">';
         if ($user["role"] === "superAdmin" && $u["state"] === "pending") {
             echo form_start("user_decision") .
                 hidden("id", $u["id"]) .
@@ -94,7 +97,7 @@ function users_view(): void
                 hidden("version", $u["session_version"]) .
                 '<label for="user-state-' .
                 (int) $u["id"] .
-                '">สถานะบัญชี</label>' .
+                '" class="sr-only">สถานะบัญชี</label>' .
                 '<select name="state" id="user-state-' .
                 (int) $u["id"] .
                 '" required>';
@@ -109,7 +112,7 @@ function users_view(): void
             }
             echo '</select><button type="submit">บันทึกสถานะ</button></form></div>';
         }
-        echo "</td></tr>";
+        echo '</div></td></tr>';
     }
     echo "</tbody></table></div>";
     paginate($data);

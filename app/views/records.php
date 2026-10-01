@@ -82,7 +82,7 @@ function registry_view(bool $ledger): void
                 '<span class="subline">' .
                 h(be_date($r["document_date"])) .
                 "</span></td><td>" .
-                h(entry_subject($r)) .
+                entry_subject_html($r) .
                 "</td><td>" .
                 $detail .
                 "</td><td>" .
@@ -118,7 +118,15 @@ function registry_view(bool $ledger): void
                 " ช่วงการลา</span></td>";
         }
         echo "<td>" . badge_html($r["status"]) . "</td><td>";
-        if ($ledger && $r["kind"] === "period" && (!$r["terminal_kind"] || is_admin())) {
+        if ($ledger && $r["kind"] === "return" && is_admin()) {
+            echo '<a class="button compact" href="' .
+                h(url("return_form", ["id" => $r["id"], "entry_id" => $r["entry_id"]])) .
+                '">แก้ไขรายงานตัวกลับ</a>';
+        } elseif (
+            $ledger &&
+            $r["kind"] === "period" &&
+            (!$r["terminal_kind"] || is_admin())
+        ) {
             echo '<a class="button compact" href="' .
                 h(url("period_form", ["id" => $r["id"], "entry_id" => $r["entry_id"]])) .
                 '">แก้ไขช่วง</a>';
@@ -259,6 +267,11 @@ function detail_view(): void
                 h(url("period_form", ["id" => $r["id"], "entry_id" => $e["id"]])) .
                 '">แก้ไขช่วงนี้</a>';
         }
+        if ($e["kind"] === "return" && is_admin()) {
+            echo '<a class="button compact" href="' .
+                h(url("return_form", ["id" => $r["id"], "entry_id" => $e["id"]])) .
+                '">แก้ไขรายงานตัวกลับ</a>';
+        }
         echo "</div><p>" .
             ($e["kind"] === "period"
                 ? h(be_date($e["start_date"]) . " – " . be_date($e["end_date"]))
@@ -277,8 +290,12 @@ function detail_view(): void
     }
     echo "</div><small>สร้าง " .
         h(be_time($r["created_at"])) .
+        " โดย " .
+        h($r["creator_name"] ?? "ไม่พบชื่อผู้สร้าง") .
         " · แก้ไขล่าสุด " .
         h(be_time($r["updated_at"])) .
+        " โดย " .
+        h($r["editor_name"] ?? "ไม่พบชื่อผู้แก้ไข") .
         "</small></section>";
 }
 
@@ -376,15 +393,21 @@ function period_form_view(string $kind): void
     $r = get_case(positive_id($_GET["id"] ?? null));
     $entry = null;
     if (!empty($_GET["entry_id"])) {
+        if (!in_array($kind, ["period", "return"], true)) {
+            throw new ValidationException("ไม่รองรับการแก้ไขรายการนี้");
+        }
+        if ($kind === "return") {
+            allowed(["admin", "superAdmin"]);
+        }
         $entry = row(
             <<<'SQL'
             SELECT *
             FROM record_entries
             WHERE id=?
             AND case_id=?
-            AND kind='period'
+            AND kind=?
             SQL,
-            [positive_id($_GET["entry_id"]), $r["id"]],
+            [positive_id($_GET["entry_id"]), $r["id"], $kind],
         );
         if (!$entry) {
             throw new ValidationException("ไม่พบช่วงในแฟ้มนี้");
@@ -402,7 +425,9 @@ function period_form_view(string $kind): void
                 ? "แก้ไขช่วงการลา"
                 : "เพิ่มช่วงการลา")
             : ($kind === "return"
-                ? "รายงานตัวกลับ"
+                ? ($entry
+                    ? "แก้ไขรายงานตัวกลับ"
+                    : "รายงานตัวกลับ")
                 : "ยกเลิกเรื่อง");
     heading($title, $r["person_name"] . " · " . case_code($r));
     echo '<section class="panel form-page">' .
@@ -413,8 +438,11 @@ function period_form_view(string $kind): void
         echo hidden("entry_id", $entry["id"]);
     }
     if ($kind !== "period") {
-        echo '<div class="notice">เมื่อบันทึกแล้ว เรื่องนี้จะปิดและเพิ่มช่วงใหม่ไม่ได้' .
-            " ประวัติเดิมยังคงอยู่</div>";
+        echo '<div class="notice">' .
+            ($entry
+                ? "แก้ไขรายการเดิมโดยคงสถานะปิดเรื่อง ระบบจะเก็บประวัติก่อนและหลังแก้ไข"
+                : "เมื่อบันทึกแล้ว เรื่องนี้จะปิดและเพิ่มช่วงใหม่ไม่ได้ ประวัติเดิมยังคงอยู่") .
+            "</div>";
     }
     entry_fields($entry ?? [], $kind);
     echo form_end("บันทึก" . $title, "detail", ["id" => $r["id"]]) . "</section>";

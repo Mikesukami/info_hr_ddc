@@ -43,9 +43,9 @@ $pendingUserRequests = pending_user_requests();
     <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="assets/app.css">
     <link rel="stylesheet" href="assets/server.css?v=2">
-    <link rel="stylesheet" href="assets/ui.css?v=2">
+    <link rel="stylesheet" href="assets/ui.css?v=3">
     <script src="assets/app.js?v=3" defer></script>
-    <script src="assets/ui.js?v=3" defer></script>
+    <script src="assets/ui.js?v=4" defer></script>
     <link rel="stylesheet" href="assets/select-search.css?v=1">
     <script src="assets/select-search.js?v=1" defer></script>
 </head>
