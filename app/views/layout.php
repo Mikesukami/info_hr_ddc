@@ -20,6 +20,8 @@ $titles = [
     "reset" => "ตั้งรหัสผ่านใหม่",
 ];
 $title = $titles[$page] ?? "ระบบลาศึกษาและฝึกอบรม";
+// หน้าก่อนเข้าสู่ระบบที่ใช้ธีมและฉาก 3D ร่วมกัน
+$useAuthTheme = !$user && in_array($page, ["login", "register", "forgot"], true);
 $workspaceLinks = [
     "overview" => "layout-dashboard",
     "registry" => "files",
@@ -48,13 +50,36 @@ $pendingUserRequests = pending_user_requests();
     <script src="assets/ui.js?v=4" defer></script>
     <link rel="stylesheet" href="assets/select-search.css?v=1">
     <script src="assets/select-search.js?v=1" defer></script>
+    <?php if ($useAuthTheme): ?>
+        <link rel="stylesheet" href="assets/login.css?v=5">
+    <?php endif; ?>
     <?php if ($page === "ledger"): ?>
         <link rel="stylesheet" href="assets/ledger-display.css?v=3">
         <script src="assets/ledger-display.js?v=2" defer></script>
     <?php endif; ?>
 </head>
-<body>
+<body<?= $useAuthTheme ? ' class="login-page' . ($page === "register" ? ' register-page' : '') . '"' : "" ?>>
 <a class="skip" href="#main">ข้ามไปยังเนื้อหา</a>
+
+<?php if ($useAuthTheme): ?>
+    <!-- ฉากตกแต่ง CSS 3D: ไม่รับคลิกและไม่อ่านโดยโปรแกรมอ่านหน้าจอ -->
+    <div class="login-art" aria-hidden="true">
+        <div class="login-scene">
+            <?php foreach (["front", "back", "small"] as $cube): ?>
+                <div class="cube-position cube-position--<?= $cube ?>">
+                    <div class="login-cube">
+                        <?php foreach (["front", "back", "right", "left", "top", "bottom"] as $face): ?>
+                            <div class="cube-face cube-face--<?= $face ?>"></div>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+            <div class="login-orb login-orb--top"></div>
+            <div class="login-orb login-orb--bottom"></div>
+            <div class="login-art-shadow"></div>
+        </div>
+    </div>
+<?php endif; ?>
 
 <?php if ($user): ?>
     <div class="shell">
