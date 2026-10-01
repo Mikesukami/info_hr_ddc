@@ -51,7 +51,7 @@ $pendingUserRequests = pending_user_requests();
     <link rel="stylesheet" href="assets/select-search.css?v=1">
     <script src="assets/select-search.js?v=1" defer></script>
     <?php if ($useAuthTheme): ?>
-        <link rel="stylesheet" href="assets/login.css?v=5">
+        <link rel="stylesheet" href="assets/login.css?v=7">
     <?php endif; ?>
     <?php if ($page === "ledger"): ?>
         <link rel="stylesheet" href="assets/ledger-display.css?v=3">
@@ -62,9 +62,20 @@ $pendingUserRequests = pending_user_requests();
 <a class="skip" href="#main">ข้ามไปยังเนื้อหา</a>
 
 <?php if ($useAuthTheme): ?>
-    <!-- ฉากตกแต่ง CSS 3D: ไม่รับคลิกและไม่อ่านโดยโปรแกรมอ่านหน้าจอ -->
+    <!-- ฉาก CSS 3D: ลูกบาศก์ขอบคมและทรงกระบอก ไม่รับคลิกหรืออ่านโดยโปรแกรมอ่านหน้าจอ -->
     <div class="login-art" aria-hidden="true">
         <div class="login-scene">
+            <?php foreach (["upper", "lower"] as $cylinder): ?>
+                <div class="cylinder-position cylinder-position--<?= $cylinder ?>">
+                    <div class="login-cylinder">
+                        <?php foreach (range(0, 19) as $segment): ?>
+                            <div class="cylinder-side cylinder-side--<?= $segment ?>"></div>
+                        <?php endforeach; ?>
+                        <div class="cylinder-cap cylinder-cap--top"></div>
+                        <div class="cylinder-cap cylinder-cap--bottom"></div>
+                    </div>
+                </div>
+            <?php endforeach; ?>
             <?php foreach (["front", "back", "small"] as $cube): ?>
                 <div class="cube-position cube-position--<?= $cube ?>">
                     <div class="login-cube">

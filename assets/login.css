@@ -216,20 +216,23 @@
 }
 
 .cube-position--small .login-cube {
-    animation-delay: -15s;
+    transform: rotateX(-20deg) rotateY(-32deg) rotateZ(28deg);
+    animation: login-small-turn 26s ease-in-out infinite alternate;
 }
 
 .cube-face {
     position: absolute;
     inset: 0;
     backface-visibility: hidden;
-    border: 1px solid #ffffff0d;
+    border: 1px solid #ffffff05;
     background: linear-gradient(135deg, #51445d, #252536);
 }
 
 .cube-face--front {
     transform: translateZ(calc(var(--cube-size) / 2));
-    background: linear-gradient(130deg, #ba865f, #795448 40%, #373041);
+    background:
+        radial-gradient(ellipse at 0% 80%, #bb713d80, transparent 70%),
+        linear-gradient(130deg, #725249, #47363e 55%, #302b37);
 }
 
 .cube-face--back {
@@ -248,7 +251,29 @@
 
 .cube-face--top {
     transform: rotateX(90deg) translateZ(calc(var(--cube-size) / 2));
-    background: radial-gradient(ellipse at 80% 25%, #f5bd64, #ad754e 28%, #514052 75%);
+    background: radial-gradient(
+        ellipse at 90% 12%,
+        #ffb02e,
+        #b66b27 20%,
+        #654439 45%,
+        #35313e 80%
+    );
+}
+
+.cube-position--small .cube-face--front {
+    background: linear-gradient(135deg, #2a2a32, #171923);
+}
+
+.cube-position--small .cube-face--top {
+    background: linear-gradient(135deg, #252733, #11131d);
+}
+
+.cube-position--back .cube-face--front {
+    background: linear-gradient(110deg, #543429, #7e4625);
+}
+
+.cube-position--back .cube-face--top {
+    background: linear-gradient(135deg, #293c49, #513a32);
 }
 
 .cube-face--bottom {
@@ -261,8 +286,10 @@
     width: 46px;
     height: 46px;
     border-radius: 50%;
-    background: radial-gradient(circle at 30% 28%, #fff9bf, #f7d874 55%, #c19140);
-    box-shadow: 0 0 38px #f0d27a18;
+    background: radial-gradient(circle at 35% 30%, #ffffb3, #faf987 65%, #efe96e);
+    box-shadow:
+        0 0 22px #fff19b20,
+        0 0 60px #e89b4212;
     animation: login-float 10s ease-in-out infinite alternate;
 }
 
@@ -288,6 +315,144 @@
     filter: blur(18px);
 }
 
+/* ทรงกระบอกประกอบจากผิว 20 ด้านและฝาทรงกลม ไม่ใช้ Canvas หรือ WebGL */
+.cylinder-position {
+    position: absolute;
+    width: 48px;
+    height: 110px;
+    transform-style: preserve-3d;
+    animation: login-float 16s ease-in-out infinite alternate;
+}
+
+.cylinder-position--upper {
+    left: 435px;
+    top: 225px;
+    z-index: 2;
+    animation-delay: -6s;
+}
+
+.cylinder-position--lower {
+    left: 250px;
+    top: 490px;
+    z-index: 1;
+    animation-delay: -10s;
+}
+
+.login-cylinder {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+    transform: rotateX(-25deg) rotateZ(18deg);
+}
+
+.cylinder-position--lower .login-cylinder {
+    transform: rotateX(-28deg) rotateZ(-38deg);
+}
+
+.cylinder-side {
+    position: absolute;
+    left: 20px;
+    top: 0;
+    width: 8px;
+    height: 110px;
+    backface-visibility: hidden;
+    background: #1b171e;
+}
+
+.cylinder-cap {
+    position: absolute;
+    left: 0;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    backface-visibility: hidden;
+}
+
+.cylinder-cap--top {
+    top: -24px;
+    transform: rotateX(90deg);
+    background: linear-gradient(135deg, #5e4a3d, #332c2d);
+}
+
+.cylinder-cap--bottom {
+    top: 86px;
+    transform: rotateX(-90deg);
+    background: #11121b;
+}
+
+/* ผิวด้านรับแสงส้มจาง ๆ และค่อย ๆ มืดลงรอบแท่ง */
+.cylinder-side--0 {
+    transform: rotateY(0deg) translateZ(24px);
+    background: #211b21;
+}
+.cylinder-side--1 {
+    transform: rotateY(18deg) translateZ(24px);
+    background: #201a20;
+}
+.cylinder-side--2 {
+    transform: rotateY(36deg) translateZ(24px);
+    background: #1a171d;
+}
+.cylinder-side--3 {
+    transform: rotateY(54deg) translateZ(24px);
+    background: #16151b;
+}
+.cylinder-side--4 {
+    transform: rotateY(72deg) translateZ(24px);
+    background: #13131a;
+}
+.cylinder-side--5 {
+    transform: rotateY(90deg) translateZ(24px);
+}
+.cylinder-side--6 {
+    transform: rotateY(108deg) translateZ(24px);
+}
+.cylinder-side--7 {
+    transform: rotateY(126deg) translateZ(24px);
+}
+.cylinder-side--8 {
+    transform: rotateY(144deg) translateZ(24px);
+}
+.cylinder-side--9 {
+    transform: rotateY(162deg) translateZ(24px);
+}
+.cylinder-side--10 {
+    transform: rotateY(180deg) translateZ(24px);
+}
+.cylinder-side--11 {
+    transform: rotateY(198deg) translateZ(24px);
+}
+.cylinder-side--12 {
+    transform: rotateY(216deg) translateZ(24px);
+}
+.cylinder-side--13 {
+    transform: rotateY(234deg) translateZ(24px);
+}
+.cylinder-side--14 {
+    transform: rotateY(252deg) translateZ(24px);
+}
+.cylinder-side--15 {
+    transform: rotateY(270deg) translateZ(24px);
+    background: #291f23;
+}
+.cylinder-side--16 {
+    transform: rotateY(288deg) translateZ(24px);
+    background: #392724;
+}
+.cylinder-side--17 {
+    transform: rotateY(306deg) translateZ(24px);
+    background: #422c25;
+}
+.cylinder-side--18 {
+    transform: rotateY(324deg) translateZ(24px);
+    background: #392622;
+}
+.cylinder-side--19 {
+    transform: rotateY(342deg) translateZ(24px);
+    background: #2b2022;
+}
+
 @keyframes login-float {
     from {
         transform: translateY(-10px);
@@ -302,7 +467,16 @@
         transform: rotateX(-22deg) rotateY(-34deg) rotateZ(5deg);
     }
     to {
-        transform: rotateX(-12deg) rotateY(-54deg) rotateZ(-6deg);
+        transform: rotateX(-18deg) rotateY(-40deg) rotateZ(1deg);
+    }
+}
+
+@keyframes login-small-turn {
+    from {
+        transform: rotateX(-20deg) rotateY(-32deg) rotateZ(28deg);
+    }
+    to {
+        transform: rotateX(-16deg) rotateY(-38deg) rotateZ(24deg);
     }
 }
 
@@ -460,7 +634,8 @@
 @media (prefers-reduced-motion: reduce) {
     .cube-position,
     .login-cube,
-    .login-orb {
+    .login-orb,
+    .cylinder-position {
         animation: none;
     }
 }
