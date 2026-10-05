@@ -47,7 +47,9 @@ $pendingUserRequests = pending_user_requests();
     <link rel="stylesheet" href="assets/server.css?v=2">
     <link rel="stylesheet" href="assets/ui.css?v=3">
     <script src="assets/app.js?v=3" defer></script>
-    <script src="assets/ui.js?v=4" defer></script>
+    <script src="assets/ui.js?v=5" defer></script>
+    <link rel="stylesheet" href="assets/be-datepicker.css?v=1">
+    <script src="assets/be-datepicker.js?v=1" defer></script>
     <link rel="stylesheet" href="assets/select-search.css?v=1">
     <script src="assets/select-search.js?v=1" defer></script>
     <?php if ($useAuthTheme): ?>
@@ -57,6 +59,10 @@ $pendingUserRequests = pending_user_requests();
         <link rel="stylesheet" href="assets/ledger-display.css?v=3">
         <script src="assets/ledger-display.js?v=2" defer></script>
     <?php endif; ?>
+    <?php if ($page === "audit"): ?>
+        <link rel="stylesheet" href="assets/audit.css?v=2">
+    <?php endif; ?>
+    <link rel="stylesheet" href="assets/dropdown.css?v=1">
 </head>
 <body<?= $useAuthTheme ? ' class="login-page' . ($page === "register" ? ' register-page' : '') . '"' : "" ?>>
 <a class="skip" href="#main">ข้ามไปยังเนื้อหา</a>

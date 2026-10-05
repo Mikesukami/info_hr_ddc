@@ -1,0 +1,178 @@
+/* ปุ่มปฏิทินไม่เปลี่ยนค่าหรือขนาดของ input เดิม */
+.be-date-field {
+    position: relative;
+    display: block;
+}
+
+.be-date-field input[data-be-date] {
+    padding-right: 46px;
+}
+
+.be-date-trigger {
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: grid;
+    place-items: center;
+    width: 34px;
+    min-height: 34px;
+    padding: 6px;
+    margin: 0;
+    border: 0;
+    border-radius: 7px;
+    color: #5351ac;
+    background: #ecebfd;
+    box-shadow: none;
+}
+
+.be-date-trigger:hover {
+    background: #dedcf9;
+}
+.be-date-trigger:disabled {
+    opacity: 0.45;
+    cursor: default;
+}
+.be-date-trigger svg {
+    width: 21px;
+    height: 21px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.6;
+}
+
+.be-calendar {
+    position: fixed;
+    inset: auto;
+    margin: 0;
+    width: min(352px, calc(100vw - 24px));
+    max-height: calc(100dvh - 24px);
+    overflow: auto;
+    padding: 18px;
+    border: 1px solid #ffffff;
+    border-radius: 18px;
+    color: #29283e;
+    background: linear-gradient(145deg, #ffffffef, #f2f1ffed);
+    backdrop-filter: blur(18px);
+    box-shadow:
+        0 18px 60px #25223e30,
+        inset 0 1px 0 #fff;
+    color-scheme: light;
+}
+
+.be-calendar::backdrop {
+    background: #24213615;
+}
+.be-calendar-heading {
+    font-size: 15px;
+    margin-bottom: 14px;
+}
+.be-calendar-navigation {
+    display: grid;
+    grid-template-columns: 30px minmax(0, 1fr) 92px 30px;
+    gap: 6px;
+    align-items: center;
+}
+.be-calendar-navigation select {
+    min-width: 0;
+    min-height: 36px;
+    margin: 0;
+    padding: 5px 6px;
+    font: inherit;
+    font-size: 13px;
+    color: #33314e;
+    border: 1px solid #dad7eb;
+    background: #ffffffc9;
+}
+.be-calendar button {
+    font: inherit;
+    font-size: 13px;
+    min-height: 34px;
+    padding: 5px;
+    margin: 0;
+    border: 1px solid transparent;
+    box-shadow: none;
+}
+.be-calendar .be-calendar-arrow {
+    font-size: 24px;
+    line-height: 1;
+    color: #514ead;
+    background: #e9e6fa;
+}
+.be-calendar-announcement {
+    margin: 12px 0 8px;
+    font-size: 12px;
+    color: #66627c;
+    text-align: center;
+}
+.be-calendar-week {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 3px;
+    margin-top: 3px;
+}
+.be-calendar-week > span {
+    text-align: center;
+    padding: 5px 0;
+    font-size: 11px;
+    color: #74708a;
+}
+.be-calendar .be-calendar-day {
+    background: transparent;
+    color: #333149;
+    border-radius: 8px;
+}
+.be-calendar .be-calendar-day:hover:not(:disabled) {
+    background: #e7e3fa;
+}
+.be-calendar .be-calendar-day.is-adjacent {
+    color: #9692a6;
+}
+.be-calendar .be-calendar-day.is-today {
+    border-color: #a39cd9;
+}
+.be-calendar .be-calendar-day[aria-selected="true"] {
+    background: #5750ca;
+    color: #fff;
+}
+.be-calendar .be-calendar-day:disabled {
+    color: #b9b5c7;
+    background: transparent;
+    cursor: default;
+    opacity: 0.6;
+}
+.be-calendar :focus-visible {
+    outline: 2px solid #5750ca;
+    outline-offset: 2px;
+}
+.be-calendar-footer {
+    display: flex;
+    gap: 8px;
+    border-top: 1px solid #ded9ee;
+    margin-top: 14px;
+    padding-top: 12px;
+}
+.be-calendar .be-calendar-today {
+    background: #e7e3fa;
+    color: #4941a2;
+    padding-inline: 12px;
+}
+.be-calendar .be-calendar-clear,
+.be-calendar .be-calendar-close {
+    background: transparent;
+    color: #615b79;
+    padding-inline: 10px;
+}
+.be-calendar .be-calendar-close {
+    margin-left: auto;
+}
+.be-calendar [hidden] {
+    display: none;
+}
+
+@media (prefers-reduced-transparency: reduce) {
+    .be-calendar {
+        background: #faf9ff;
+        backdrop-filter: none;
+    }
+}

@@ -1,0 +1,114 @@
+/* เฉพาะประวัติการทำรายการ: แถวกระชับและตัวกรองที่ปรับตามพื้นที่จอ */
+.audit-filters {
+    display: grid;
+    grid-template-columns: minmax(200px, 1.5fr) repeat(2, minmax(155px, 1fr)) 115px auto;
+    gap: 14px;
+    align-items: start;
+}
+
+.audit-filters label {
+    font-size: 14px;
+    min-width: 0;
+}
+
+.audit-filters input,
+.audit-filters select,
+.audit-filters .button,
+.audit-filters button {
+    font-size: 14px;
+    min-height: 40px;
+}
+
+.audit-filters .filter-actions {
+    align-self: start;
+    padding-top: 28px;
+}
+
+/* ระยะห่างอยู่ที่กรอบรวม เพื่อให้ปุ่มกึ่งกลาง input ไม่รวม margin ของช่องกรอก */
+.audit-filters .be-date-field {
+    margin-top: 5px;
+}
+
+.audit-filters .be-date-field input[data-be-date] {
+    display: block;
+    margin: 0;
+}
+
+.audit-filters .be-date-trigger {
+    height: 34px;
+    min-height: 34px;
+    padding: 6px;
+}
+
+.audit-filter-hint {
+    font-size: 12px;
+    color: #656a80;
+    margin: 10px 0 18px;
+}
+
+.audit-table {
+    font-size: 13px;
+    min-width: 650px;
+}
+
+.audit-table th,
+.audit-table td {
+    padding: 8px 12px;
+    line-height: 1.55;
+    vertical-align: top;
+}
+
+.audit-table th:first-child,
+.audit-table td:first-child {
+    width: 190px;
+    white-space: nowrap;
+}
+
+.audit-table th:last-child {
+    width: 220px;
+}
+
+.audit-table .subline,
+.audit-table summary {
+    font-size: 11px;
+    line-height: 1.5;
+    margin-top: 3px;
+}
+
+.audit-table summary {
+    cursor: pointer;
+    color: #484ab0;
+}
+
+.audit-table .audit-json {
+    font-size: 12px;
+    line-height: 1.6;
+    max-height: 320px;
+    max-width: 650px;
+    overflow: auto;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.audit-table td.audit-empty {
+    padding: 24px;
+    white-space: normal;
+    text-align: center;
+    color: #656a80;
+}
+
+@media (max-width: 1200px) {
+    .audit-filters {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .audit-filters .filter-actions {
+        padding-top: 0;
+        grid-column: 1 / -1;
+    }
+}
+
+@media (max-width: 600px) {
+    .audit-filters {
+        grid-template-columns: 1fr;
+    }
+}

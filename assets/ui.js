@@ -31,7 +31,7 @@
         if (!label) return field.getAttribute("aria-label") || "ช่องนี้";
         const copy = label.cloneNode(true);
         copy.querySelectorAll(
-            "input, select, textarea, .field-error, .field-hint, .required, .search-select",
+            "input, select, textarea, .field-error, .field-hint, .required, .search-select, .be-date-trigger",
         ).forEach((node) => node.remove());
         return copy.textContent.trim() || "ช่องนี้";
     }

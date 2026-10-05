@@ -1,0 +1,52 @@
+/* ลูกศรเดียวกันทั้ง native select และช่องเลือกที่พิมพ์ค้นหาได้ */
+select:not([multiple]):not([size]),
+select:not([multiple])[size="1"] {
+    appearance: none;
+    -webkit-appearance: none;
+    padding-right: 38px;
+    background-image: url("chevron-down.svg");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 16px 16px;
+}
+
+.search-select-trigger {
+    position: relative;
+    padding-right: 38px;
+}
+
+.search-select-trigger::after {
+    content: "";
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    width: 16px;
+    height: 16px;
+    transform: translateY(-50%);
+    background: url("chevron-down.svg") center / 16px 16px no-repeat;
+    pointer-events: none;
+}
+
+/* ช่องเลือกเดือน/ปีมีพื้นที่น้อย ใช้ระยะขอบที่กระชับเท่ากัน */
+.be-calendar-navigation select {
+    padding-right: 26px;
+    background-position: right 6px center;
+}
+
+/* โหมดสีคอนทราสต์สูงยังเห็นลูกศร แม้ระบบจะซ่อนภาพพื้นหลัง */
+@media (forced-colors: active) {
+    select:not([multiple]):not([size]),
+    select:not([multiple])[size="1"] {
+        appearance: auto;
+        background-image: none;
+    }
+
+    .search-select-trigger::after {
+        width: 8px;
+        height: 8px;
+        background: none;
+        border-right: 2px solid ButtonText;
+        border-bottom: 2px solid ButtonText;
+        transform: translateY(-70%) rotate(45deg);
+    }
+}

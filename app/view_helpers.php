@@ -42,7 +42,7 @@ function input_field(
         $attrs =
             ' data-be-date inputmode="numeric" pattern="[0-9]{2}/[0-9]{2}/[0-9]{4}" placeholder="วว/ดด/พ.ศ."';
         $max = 10;
-        $hint = '<span class="field-hint">วว/ดด/พ.ศ. เช่น 01/07/2569</span>';
+        $hint = '<span class="field-hint">พิมพ์ วว/ดด/พ.ศ. หรือเลือกจากปฏิทิน</span>';
     }
     if ($type === "password") {
         $value = "";

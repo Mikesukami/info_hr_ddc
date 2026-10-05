@@ -40,7 +40,7 @@ function users_view(): void
         '<table class="server-table users-table"><thead><tr>' .
         '<th scope="col">ผู้ใช้งาน</th><th scope="col">ตำแหน่ง / โทร</th>' .
         '<th scope="col">บทบาท / สถานะ</th><th scope="col">จัดการบัญชี</th>' .
-        '</tr></thead><tbody>';
+        "</tr></thead><tbody>";
     $states = [
         "pending" => "รออนุมัติ",
         "approved" => "อนุมัติแล้ว",
@@ -112,7 +112,7 @@ function users_view(): void
             }
             echo '</select><button type="submit">บันทึกสถานะ</button></form></div>';
         }
-        echo '</div></td></tr>';
+        echo "</div></td></tr>";
     }
     echo "</tbody></table></div>";
     paginate($data);
@@ -130,7 +130,8 @@ function users_view(): void
             WHERE r.state='pending' AND u.state='approved'
             ORDER BY r.id DESC
             LIMIT 20
-            SQL,
+            SQL
+            ,
         );
         echo '<section class="panel"><h2>คำขอรีเซ็ตรหัสผ่านล่าสุด</h2><p class="sectio' .
             'n-copy">แสดงคำขอรอดำเนินการล่าสุดไม่เกิน 20 รายการ ออกลิงก์ให้บัญชีที่เก' .
@@ -151,18 +152,146 @@ function users_view(): void
     }
 }
 
+/** อ่านตัวกรองจาก URL และสร้างเงื่อนไข SQL แบบมี parameters */
+function audit_filters(): array
+{
+    $values = [];
+    $errors = [];
+    foreach (["actor_name", "from", "to"] as $key) {
+        $raw = $_GET[$key] ?? "";
+        if (!is_string($raw)) {
+            $errors[$key] = "รูปแบบตัวกรองไม่ถูกต้อง";
+        }
+        $values[$key] = is_string($raw) ? trim($raw) : "";
+    }
+    if (mb_strlen($values["actor_name"]) > 200) {
+        $errors["actor_name"] = "ชื่อผู้ดำเนินการต้องไม่เกิน 200 ตัวอักษร";
+    }
+
+    $dates = [];
+    foreach (["from" => "วันที่เริ่มต้น", "to" => "วันที่สิ้นสุด"] as $key => $label) {
+        if ($values[$key] === "") {
+            continue;
+        }
+        $valid = preg_match('~^(\d{2})/(\d{2})/(\d{4})$~', $values[$key], $parts);
+        if (
+            !$valid ||
+            (int) $parts[3] < 2400 ||
+            (int) $parts[3] > 2800 ||
+            !checkdate((int) $parts[2], (int) $parts[1], (int) $parts[3] - 543)
+        ) {
+            $errors[$key] = "$label ต้องเป็นวันที่จริง รูปแบบ วว/ดด/พ.ศ. (2400–2800)";
+            continue;
+        }
+        $dates[$key] = sprintf(
+            "%04d-%02d-%02d",
+            (int) $parts[3] - 543,
+            (int) $parts[2],
+            (int) $parts[1],
+        );
+    }
+    if (isset($dates["from"], $dates["to"]) && $dates["from"] > $dates["to"]) {
+        $errors["to"] = "วันที่สิ้นสุดต้องไม่ก่อนวันที่เริ่มต้น";
+    }
+
+    $clauses = [];
+    $params = [];
+    if ($values["actor_name"] !== "" && !$errors) {
+        // % และ _ ที่ผู้ใช้พิมพ์ให้ค้นหาเป็นข้อความ ไม่ใช่ wildcard ของ SQL
+        $clauses[] = "u.name LIKE ? ESCAPE '!'";
+        $params[] =
+            "%" .
+            str_replace(["!", "%", "_"], ["!!", "!%", "!_"], $values["actor_name"]) .
+            "%";
+    }
+    if (isset($dates["from"])) {
+        $clauses[] = "a.created_at >= ?";
+        $params[] = $dates["from"] . " 00:00:00";
+    }
+    if (isset($dates["to"])) {
+        // ใช้ต้นวันถัดไป เพื่อรวมทุกรายการในวันสิ้นสุดและใช้ดัชนีวันเวลาได้
+        $clauses[] = "a.created_at < ?";
+        $endDate = new DateTimeImmutable($dates["to"]);
+        $params[] = $endDate->modify("+1 day")
+            ->format("Y-m-d 00:00:00");
+    }
+    $where = $errors
+        ? " WHERE 1=0"
+        : ($clauses
+            ? " WHERE " . implode(" AND ", $clauses)
+            : "");
+    return [$values, $errors, $where, $errors ? [] : $params];
+}
+
 function audit_view(): void
 {
     heading("ประวัติการทำรายการ", "บันทึกผู้ดำเนินการ วันเวลา และการเปลี่ยนแปลง");
+    [$values, $errors, $where, $params] = audit_filters();
     $data = page_data(
         "audit_logs a LEFT JOIN users u ON u.id=a.created_by",
-        "",
-        [],
+        $where,
+        $params,
         "a.*,u.name AS actor_name",
         "a.id DESC",
     );
-    echo '<section class="panel"><div class="server-table-scroll"><table class="se' .
-        'rver-table"><thead><tr><th>วันเวลา (พ.ศ.)</th><th>รายการ</th><th>ผู้ดำเน' .
+    echo '<section class="panel audit-panel">';
+    if ($errors) {
+        echo '<div class="notice error-notice" role="alert">กรุณาตรวจสอบตัวกรองด้านล่าง</div>';
+    }
+    echo '<form method="get" action="index.php" class="filter-form audit-filters">' .
+        hidden("page", "audit");
+    foreach (
+        [
+            "actor_name" => "ชื่อผู้ดำเนินการ",
+            "from" => "ตั้งแต่วันที่ (พ.ศ.)",
+            "to" => "ถึงวันที่ (พ.ศ.)",
+        ]
+        as $key => $label
+    ) {
+        $error = $errors[$key] ?? "";
+        $date = $key !== "actor_name";
+        echo "<label>" .
+            h($label) .
+            '<input name="' .
+            $key .
+            '" type="' .
+            ($date ? "text" : "search") .
+            '" value="' .
+            h($values[$key]) .
+            '"' .
+            ($date
+                ? ' data-be-date inputmode="numeric" maxlength="10" pattern="[0-9]{2}/[0-9]{2}/[0-9]{4}" placeholder="วว/ดด/พ.ศ."'
+                : ' maxlength="200" placeholder="พิมพ์ชื่อหรือบางส่วนของชื่อ"') .
+            ($error
+                ? ' aria-invalid="true" aria-describedby="audit-' . $key . '-error"'
+                : "") .
+            ">";
+        if ($error) {
+            echo '<span class="field-error" id="audit-' .
+                $key .
+                '-error">' .
+                h($error) .
+                "</span>";
+        }
+        echo "</label>";
+    }
+    echo '<label>จำนวนต่อหน้า<select name="size">';
+    foreach ([10, 25, 50, 100] as $size) {
+        echo '<option value="' .
+            $size .
+            '"' .
+            selected($size, $data["size"]) .
+            ">" .
+            $size .
+            "</option>";
+    }
+    echo '</select></label><div class="filter-actions"><button class="primary" type="submit">' .
+        icon("search") .
+        'ค้นหา</button><a class="button" href="' .
+        h(url("audit")) .
+        '">ล้าง</a></div></form>';
+    echo '<p class="audit-filter-hint">เว้นวันที่ว่างได้ · รวมรายการทั้งวันของวันที่สิ้นสุด</p>';
+    echo '<div class="server-table-scroll"><table class="server-table audit-table"><thead><tr><th>วันเวลา (พ.ศ.)</th><th>รายการ</th><th>ผู้ดำเน' .
         "ินการ</th></tr></thead><tbody>";
     foreach ($data["items"] as $r) {
         echo "<tr><td>" .
@@ -191,6 +320,13 @@ function audit_view(): void
         }
         echo "</td><td>" .
             h($r["actor_name"] ?? "คำขอที่ยังไม่ยืนยันตัวตน") .
+            "</td></tr>";
+    }
+    if (!$data["items"]) {
+        echo '<tr><td colspan="3" class="audit-empty">' .
+            ($errors
+                ? "แก้ไขตัวกรองแล้วกดค้นหาอีกครั้ง"
+                : "ไม่พบประวัติการทำรายการตามเงื่อนไขที่เลือก") .
             "</td></tr>";
     }
     echo "</tbody></table></div>";
