@@ -63,6 +63,10 @@ $pendingUserRequests = pending_user_requests();
         <link rel="stylesheet" href="assets/audit.css?v=2">
     <?php endif; ?>
     <link rel="stylesheet" href="assets/dropdown.css?v=1">
+    <?php if (in_array($page, ["case_form", "period_form", "return_form", "cancel_form"], true)): ?>
+        <link rel="stylesheet" href="assets/leave-fields.css?v=1">
+        <script src="assets/leave-fields.js?v=1" defer></script>
+    <?php endif; ?>
 </head>
 <body<?= $useAuthTheme ? ' class="login-page' . ($page === "register" ? ' register-page' : '') . '"' : "" ?>>
 <a class="skip" href="#main">ข้ามไปยังเนื้อหา</a>
