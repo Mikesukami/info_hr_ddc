@@ -188,6 +188,7 @@
     }
 
     document.querySelectorAll("form.app-form").forEach((form) => {
+        const authForm = Boolean(form.closest(".login-page .auth-panel"));
         const fields = [
             ...form.querySelectorAll("input:not([type=hidden]), select, textarea"),
         ];
@@ -231,18 +232,21 @@
             summary.hidden = errors.length === 0;
             if (errors.length) {
                 const title = document.createElement("strong");
-                title.textContent = `กรุณาตรวจสอบข้อมูล ${errors.length} จุดก่อนบันทึก`;
+                title.textContent = authForm
+                    ? `กรุณาตรวจสอบช่องที่ทำเครื่องหมาย (${errors.length} ช่อง)`
+                    : `กรุณาตรวจสอบข้อมูล ${errors.length} จุดก่อนบันทึก`;
                 summary.append(title);
-                errors.forEach(({ field, message }) => {
-                    const link = document.createElement("a");
-                    link.href = `#${field.id}`;
-                    link.textContent = message;
-                    link.addEventListener("click", (event) => {
-                        event.preventDefault();
-                        field.focus();
+                if (!authForm)
+                    errors.forEach(({ field, message }) => {
+                        const link = document.createElement("a");
+                        link.href = `#${field.id}`;
+                        link.textContent = message;
+                        link.addEventListener("click", (event) => {
+                            event.preventDefault();
+                            field.focus();
+                        });
+                        summary.append(link);
                     });
-                    summary.append(link);
-                });
             }
             return errors.length === 0;
         }
@@ -276,7 +280,11 @@
             }
             if (!validate()) {
                 event.preventDefault();
-                summary.focus();
+                if (authForm)
+                    fields
+                        .find((field) => field.getAttribute("aria-invalid") === "true")
+                        ?.focus();
+                else summary.focus();
                 return;
             }
             const confirm = confirmation(form, event.submitter);

@@ -103,6 +103,30 @@
     color: #ffb9be;
 }
 
+/* แจ้งข้อผิดพลาดแบบกระชับ ไม่ใช้รายการลิงก์ซ้ำกับข้อความใต้แต่ละช่อง */
+.login-page .auth-main .validation-summary,
+.login-page .auth-main .error-notice {
+    padding: 11px 14px;
+    margin-bottom: 18px;
+    border: 1px solid #9d657655;
+    border-radius: 10px;
+    background: #382b3f;
+    color: #f3bdc5;
+    font-size: 13px;
+    line-height: 1.6;
+    box-shadow: none;
+}
+
+.login-page .validation-summary strong {
+    font-weight: 500;
+}
+
+.login-page .auth-main .success-notice {
+    background: #253b36;
+    color: #bfe8d9;
+    border-color: #6fa68f66;
+}
+
 .login-page .form-actions {
     border: 0;
     padding-top: 0;
@@ -530,9 +554,13 @@
 }
 
 .register-page .page-intro p,
-.register-page .section-copy,
-.register-page label {
+.register-page .section-copy {
     font-size: 14px;
+}
+
+/* หัวข้ออยู่เหนือช่องตลอด ไม่ย่อขนาดขณะพิมพ์ */
+.register-page label {
+    font-size: 15px;
 }
 
 .register-page .auth-panel .form-grid {
@@ -575,8 +603,8 @@
 /* จอมือถือใช้คอลัมน์เดียว ไม่บีบช่องกรอกหรือซ่อนข้อมูลเพื่อบังคับให้พอดีจอ */
 @media (min-width: 761px) and (max-height: 700px) {
     .register-page .auth-main {
-        padding-top: 16px;
-        padding-bottom: 16px;
+        padding-top: 12px;
+        padding-bottom: 12px;
     }
 
     .register-page .auth-brand {

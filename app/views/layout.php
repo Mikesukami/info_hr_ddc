@@ -47,13 +47,13 @@ $pendingUserRequests = pending_user_requests();
     <link rel="stylesheet" href="assets/server.css?v=2">
     <link rel="stylesheet" href="assets/ui.css?v=3">
     <script src="assets/app.js?v=3" defer></script>
-    <script src="assets/ui.js?v=5" defer></script>
+    <script src="assets/ui.js?v=6" defer></script>
     <link rel="stylesheet" href="assets/be-datepicker.css?v=1">
     <script src="assets/be-datepicker.js?v=1" defer></script>
     <link rel="stylesheet" href="assets/select-search.css?v=1">
     <script src="assets/select-search.js?v=1" defer></script>
     <?php if ($useAuthTheme): ?>
-        <link rel="stylesheet" href="assets/login.css?v=7">
+        <link rel="stylesheet" href="assets/login.css?v=9">
     <?php endif; ?>
     <?php if ($page === "ledger"): ?>
         <link rel="stylesheet" href="assets/ledger-display.css?v=3">
@@ -64,8 +64,8 @@ $pendingUserRequests = pending_user_requests();
     <?php endif; ?>
     <link rel="stylesheet" href="assets/dropdown.css?v=1">
     <?php if (in_array($page, ["case_form", "period_form", "return_form", "cancel_form"], true)): ?>
-        <link rel="stylesheet" href="assets/leave-fields.css?v=1">
-        <script src="assets/leave-fields.js?v=1" defer></script>
+        <link rel="stylesheet" href="assets/leave-fields.css?v=4">
+        <script src="assets/leave-fields.js?v=3" defer></script>
     <?php endif; ?>
 </head>
 <body<?= $useAuthTheme ? ' class="login-page' . ($page === "register" ? ' register-page' : '') . '"' : "" ?>>

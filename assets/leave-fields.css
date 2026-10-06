@@ -12,6 +12,7 @@
     left: 12px;
     top: 26px;
     transform: translateY(-50%);
+    transform-origin: left center;
     padding: 0 5px;
     max-width: calc(100% - 38px);
     overflow: hidden;
@@ -23,14 +24,13 @@
     color: #73758b;
     pointer-events: none;
     transition:
-        top 160ms ease,
-        font-size 160ms ease,
-        color 160ms ease;
+        transform 280ms cubic-bezier(0.22, 1, 0.36, 1),
+        color 200ms ease,
+        background-color 200ms ease;
 }
 
 .form-page .leave-floating-label.is-raised .leave-floating-caption {
-    top: 0;
-    font-size: 12px;
+    transform: translateY(calc(-50% - 26px)) scale(0.8);
     color: #555776;
     background: #fff;
 }
