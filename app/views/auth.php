@@ -25,9 +25,7 @@ function auth_view(string $page): void
         echo input_field("ชื่อผู้ใช้", "username", "", "text", true, 80);
     }
     if ($page === "register") {
-        echo input_field("ชื่อ–นามสกุล", "name") .
-            input_field("ตำแหน่ง", "position") .
-            input_field("เบอร์โทร", "phone", "", "tel", true, 30);
+        echo user_profile_fields();
     }
     if ($page === "password") {
         echo '<label class="full">รหัสผ่านปัจจุบัน <span class="required">*</span><inp' .

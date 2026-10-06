@@ -116,13 +116,18 @@
     flex: 0 0 auto;
 }
 
-.users-table button {
+.users-table button,
+.users-table .user-row-actions > .button {
     min-height: 34px;
     padding: 5px 10px;
     font-size: 13px;
     line-height: 1.5;
     white-space: nowrap;
     margin: 0;
+}
+
+.users-table .user-row-actions > .button {
+    flex-shrink: 0;
 }
 
 .users-table .check-label {

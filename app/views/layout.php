@@ -5,6 +5,8 @@ $titles = [
     "overview" => "ภาพรวม",
     "reports" => "รายงานและสถิติ",
     "users" => "ผู้ใช้งานและสิทธิ์",
+    "profile" => "ข้อมูลส่วนตัว",
+    "user_profile" => "แก้ไขข้อมูลผู้ใช้งาน",
     "settings" => "ข้อมูลอ้างอิง",
     "audit" => "ประวัติการทำรายการ",
     "help" => "คู่มือการใช้งาน",
@@ -45,15 +47,17 @@ $pendingUserRequests = pending_user_requests();
     <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="assets/app.css">
     <link rel="stylesheet" href="assets/server.css?v=2">
-    <link rel="stylesheet" href="assets/ui.css?v=3">
-    <script src="assets/app.js?v=3" defer></script>
-    <script src="assets/ui.js?v=6" defer></script>
+    <link rel="stylesheet" href="assets/ui.css?v=4">
+    <link rel="stylesheet" href="assets/navigation.css?v=1">
+    <script src="assets/navigation.js?v=2" defer></script>
+    <script src="assets/app.js?v=4" defer></script>
+    <script src="assets/ui.js?v=7" defer></script>
     <link rel="stylesheet" href="assets/be-datepicker.css?v=1">
     <script src="assets/be-datepicker.js?v=1" defer></script>
     <link rel="stylesheet" href="assets/select-search.css?v=1">
     <script src="assets/select-search.js?v=1" defer></script>
     <?php if ($useAuthTheme): ?>
-        <link rel="stylesheet" href="assets/login.css?v=9">
+        <link rel="stylesheet" href="assets/login.css?v=10">
     <?php endif; ?>
     <?php if ($page === "ledger"): ?>
         <link rel="stylesheet" href="assets/ledger-display.css?v=3">
@@ -114,7 +118,8 @@ $pendingUserRequests = pending_user_requests();
                 </div>
             </div>
 
-            <div class="nav-label">พื้นที่ทำงาน</div>
+            <details class="nav-group" data-nav-group="workspace" open>
+            <summary>พื้นที่ทำงาน<span class="nav-chevron" aria-hidden="true"></span></summary>
             <nav class="nav">
                 <?php foreach ($workspaceLinks as $key => $glyph): ?>
                     <a href="<?= h(url($key)) ?>"
@@ -123,9 +128,16 @@ $pendingUserRequests = pending_user_requests();
                     </a>
                 <?php endforeach; ?>
             </nav>
+            </details>
 
             <?php if (is_admin()): ?>
-                <div class="nav-label">จัดการระบบ</div>
+                <details class="nav-group" data-nav-group="admin" open>
+                <summary>จัดการระบบ
+                    <?php if ($pendingUserRequests > 0): ?>
+                        <span class="request-count group-request-count" aria-label="คำขอรอดำเนินการ <?= $pendingUserRequests ?> รายการ"><?= number_format($pendingUserRequests) ?></span>
+                    <?php endif; ?>
+                    <span class="nav-chevron" aria-hidden="true"></span>
+                </summary>
                 <nav class="nav">
                     <?php foreach ($adminLinks as $key => $glyph): ?>
                         <a href="<?= h(url($key)) ?>"
@@ -141,13 +153,11 @@ $pendingUserRequests = pending_user_requests();
                         </a>
                     <?php endforeach; ?>
                 </nav>
+                </details>
             <?php endif; ?>
 
             <div class="sidebar-bottom">
                 <nav class="nav">
-                    <a href="<?= h(url("password")) ?>">
-                        <?= icon("shield-check") ?>เปลี่ยนรหัสผ่าน
-                    </a>
                     <a href="<?= h(url("help")) ?>">
                         <?= icon("circle-help") ?>คู่มือการใช้งาน
                     </a>
@@ -171,17 +181,27 @@ $pendingUserRequests = pending_user_requests();
                 </button>
                 <div class="breadcrumb"><?= h($title) ?></div>
                 <div class="top-actions">
-                    <div class="account">
+                    <details class="account-menu" id="accountMenu">
+                    <summary class="account" aria-label="เมนูบัญชีของ <?= h($user["name"]) ?>">
                         <span class="avatar"><?= h(mb_substr($user["name"], 0, 2)) ?></span>
                         <div class="account-copy">
                             <strong><?= h($user["name"]) ?></strong>
                             <small><?= h(ROLE_LABELS[$user["role"]]) ?></small>
                         </div>
-                    </div>
-                    <form method="post" action="index.php">
+                        <span class="nav-chevron" aria-hidden="true"></span>
+                    </summary>
+                    <div class="account-dropdown">
+                        <div class="account-menu-heading">บัญชีของฉัน</div>
+                        <nav aria-label="เมนูบัญชี">
+                            <a href="<?= h(url("profile")) ?>" <?= $page === "profile" ? 'aria-current="page"' : "" ?>><?= icon("users") ?>ข้อมูลส่วนตัว</a>
+                            <a href="<?= h(url("password")) ?>" <?= $page === "password" ? 'aria-current="page"' : "" ?>><?= icon("shield-check") ?>เปลี่ยนรหัสผ่าน</a>
+                        </nav>
+                        <form method="post" action="index.php">
                         <?= csrf() . hidden("action", "logout") ?>
                         <button class="logout" type="submit">ออกจากระบบ</button>
                     </form>
+                    </div>
+                    </details>
                 </div>
             </header>
             <main class="main" id="main">

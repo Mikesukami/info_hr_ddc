@@ -534,10 +534,46 @@
     }
 }
 
-/* ฟอร์มลงทะเบียน: 6 ช่องเป็น 3 แถว เพื่อให้ครบในหน้าจอคอมพิวเตอร์ */
+/* ฟอร์มลงทะเบียนมีข้อมูลส่วนตัวเพิ่ม: ให้พื้นที่ฟอร์มกว้างขึ้นบนคอมพิวเตอร์ */
+@media (min-width: 761px) {
+    .register-page .auth-main {
+        width: 64%;
+    }
+    .register-page .login-art {
+        left: 64%;
+    }
+    .register-page .auth-panel .form-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    .register-page .login-scene {
+        transform: translate(-50%, -50%) scale(0.7);
+    }
+}
+
+.login-page .search-select-trigger {
+    background: #252438;
+    color: #fff;
+    border: 1px solid #77758e;
+    border-radius: 12px;
+}
+.login-page .search-select-popup {
+    color: #242438;
+    color-scheme: light;
+}
+.login-page .search-select-popup input:not([type="hidden"]):not([type="checkbox"]) {
+    background: #f5f5fb;
+    color: #242438;
+}
+.register-page .search-select-trigger {
+    min-height: 40px;
+    font-size: 14px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+}
+
 .register-page .auth-main {
-    padding-top: 24px;
-    padding-bottom: 24px;
+    padding-top: 20px;
+    padding-bottom: 20px;
 }
 
 .register-page .auth-brand {
@@ -561,11 +597,11 @@
 /* หัวข้ออยู่เหนือช่องตลอด ไม่ย่อขนาดขณะพิมพ์ */
 .register-page label {
     font-size: 15px;
+    line-height: 1.5;
 }
 
 .register-page .auth-panel .form-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 14px 16px;
+    gap: 10px 16px;
 }
 
 .register-page input:not([type="hidden"]):not([type="checkbox"]) {
@@ -601,7 +637,7 @@
 }
 
 /* จอมือถือใช้คอลัมน์เดียว ไม่บีบช่องกรอกหรือซ่อนข้อมูลเพื่อบังคับให้พอดีจอ */
-@media (min-width: 761px) and (max-height: 700px) {
+@media (min-width: 761px) and (max-height: 760px) {
     .register-page .auth-main {
         padding-top: 12px;
         padding-bottom: 12px;

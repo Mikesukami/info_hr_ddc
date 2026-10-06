@@ -1,0 +1,203 @@
+/* เมนูหลักเป็นหมวดพับได้; เครื่องมือส่วนตัวอยู่ที่ชื่อมุมขวาบน */
+.sidebar {
+    padding: 24px 20px 18px;
+    scrollbar-width: thin;
+    scrollbar-color: #57556d transparent;
+}
+.sidebar::-webkit-scrollbar {
+    width: 5px;
+}
+.sidebar::-webkit-scrollbar-thumb {
+    background: #57556d;
+    border-radius: 5px;
+}
+.sidebar .brand {
+    padding-bottom: 20px;
+    flex-shrink: 0;
+}
+.nav-group {
+    margin-top: 16px;
+    flex-shrink: 0;
+}
+.nav-group > summary {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    color: #b9b9ce;
+    font-size: 12px;
+    cursor: pointer;
+    list-style: none;
+    border-radius: 6px;
+}
+.nav-group > summary::-webkit-details-marker,
+.account-menu > summary::-webkit-details-marker {
+    display: none;
+}
+.nav-group > summary:hover {
+    background: #ffffff08;
+    color: #fff;
+}
+.nav-chevron {
+    width: 7px;
+    height: 7px;
+    border-right: 1.5px solid currentColor;
+    border-bottom: 1.5px solid currentColor;
+    transform: rotate(45deg);
+    margin-left: auto;
+    flex-shrink: 0;
+    transition: transform 180ms ease;
+}
+details[open] > summary .nav-chevron {
+    transform: rotate(225deg);
+}
+.sidebar .nav {
+    gap: 4px;
+}
+.sidebar .nav a {
+    padding: 9px 10px;
+    font-size: 15px;
+}
+.sidebar-bottom {
+    padding-top: 16px;
+    flex-shrink: 0;
+}
+.sidebar .edition {
+    margin-top: 16px;
+    padding-top: 12px;
+}
+.nav-group[open] .group-request-count {
+    display: none;
+}
+.nav-group .group-request-count {
+    margin-left: auto;
+}
+.nav-group:not([open]) .group-request-count + .nav-chevron {
+    margin-left: 0;
+}
+.account-menu {
+    position: relative;
+}
+.account-menu .avatar {
+    display: grid;
+    flex-shrink: 0;
+}
+.account-menu > summary {
+    list-style: none;
+    cursor: pointer;
+    gap: 10px;
+    padding: 6px 10px;
+    border-radius: 10px;
+    color: #eeedf7;
+}
+.account-menu > summary:hover,
+.account-menu[open] > summary {
+    background: #ffffff0a;
+}
+.account-menu .account-copy {
+    min-width: 0;
+    max-width: 240px;
+}
+.account-menu .account-copy strong {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.account-menu .nav-chevron {
+    margin-left: 5px;
+}
+.account-dropdown {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 10px);
+    width: 248px;
+    max-width: calc(100vw - 32px);
+    padding: 8px;
+    border: 1px solid #ddddeb;
+    border-radius: 12px;
+    background: #fff;
+    color: #242438;
+    box-shadow: 0 12px 32px #17162526;
+    z-index: 45;
+}
+.account-menu-heading {
+    padding: 8px 10px;
+    color: #73738b;
+    font-size: 12px;
+}
+.account-dropdown nav {
+    display: grid;
+    gap: 3px;
+}
+.account-dropdown a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    border-radius: 7px;
+    color: #35354f;
+    font-size: 14px;
+    text-decoration: none;
+}
+.account-dropdown a:hover,
+.account-dropdown a[aria-current="page"] {
+    background: #efedfc;
+    color: #4943a8;
+}
+.account-dropdown form {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid #ececf4;
+}
+.account-dropdown .logout {
+    width: 100%;
+    text-align: left;
+    border: 0;
+    border-radius: 7px;
+    background: transparent;
+    color: #a72c42;
+    padding: 10px;
+    font-size: 14px;
+}
+.account-dropdown .logout:hover {
+    background: #fff0f3;
+}
+.nav-group > summary:focus-visible,
+.account-menu > summary:focus-visible,
+.account-dropdown a:focus-visible {
+    outline: 2px solid #aaa3ff;
+    outline-offset: 2px;
+}
+@media (max-height: 800px) {
+    .sidebar {
+        padding-top: 16px;
+        padding-bottom: 12px;
+    }
+    .sidebar .brand {
+        padding-bottom: 14px;
+    }
+    .nav-group {
+        margin-top: 10px;
+    }
+    .sidebar .nav a {
+        padding-top: 7px;
+        padding-bottom: 7px;
+    }
+    .sidebar .edition {
+        display: none;
+    }
+}
+@media (max-width: 850px) {
+    .account-menu > summary {
+        padding: 5px;
+    }
+    .account-menu .nav-chevron {
+        display: none;
+    }
+}
+@media (prefers-reduced-motion: reduce) {
+    .nav-chevron {
+        transition: none;
+    }
+}

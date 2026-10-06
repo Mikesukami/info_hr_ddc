@@ -39,7 +39,7 @@
                 sidebar.classList.toggle("open");
                 sync();
                 if (sidebar.classList.contains("open"))
-                    sidebar.querySelector("a").focus();
+                    sidebar.querySelector("summary, a").focus();
             } else {
                 collapsed = !collapsed;
                 try {
@@ -60,7 +60,11 @@
             if (!mobile.matches || !sidebar.classList.contains("open")) return;
             if (event.key === "Escape") closeMobile();
             if (event.key === "Tab") {
-                const links = [...sidebar.querySelectorAll("a")];
+                const links = [
+                    ...sidebar.querySelectorAll("a[href], summary, button"),
+                ].filter(
+                    (element) => element.getClientRects().length > 0 && !element.disabled,
+                );
                 if (event.shiftKey && document.activeElement === links[0]) {
                     event.preventDefault();
                     links.at(-1).focus();

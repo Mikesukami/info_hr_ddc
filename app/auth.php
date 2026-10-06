@@ -55,53 +55,60 @@ function register_action(): void
             "ชื่อผู้ใช้ใช้ตัวอักษรอังกฤษ ตัวเลข จุด ขีดกลางหรือขีดล่าง 3–80 ตัว",
         );
     }
-    $name = text_input("name");
-    $position = text_input("position");
-    $phone = text_input("phone", 30);
+    $profile = user_profile_input();
     $password = password_input();
-    transaction(function () use ($username, $name, $position, $phone, $password) {
-        if (row("SELECT id FROM users WHERE username=?", [$username])) {
+    try {
+        transaction(function () use ($username, $profile, $password) {
+            if (row("SELECT id FROM users WHERE username=?", [$username])) {
+                throw new ValidationException(
+                    "ชื่อผู้ใช้นี้ไม่สามารถใช้ได้ กรุณาเลือกชื่ออื่น",
+                );
+            }
+            ensure_national_id_available($profile["national_id"]);
+            query(
+                <<<'SQL'
+                INSERT INTO users(username, title, first_name, last_name, national_id,
+                    email, position, phone, org_id, name, password_hash, role, state)
+                VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'officer', 'pending')
+                SQL,
+                [
+                    $username,
+                    $profile["title"],
+                    $profile["first_name"],
+                    $profile["last_name"],
+                    $profile["national_id"],
+                    $profile["email"],
+                    $profile["position"],
+                    $profile["phone"],
+                    $profile["org_id"],
+                    $profile["name"],
+                    password_hash($password, PASSWORD_DEFAULT),
+                ],
+            );
+            $id = (int) db()->lastInsertId();
+            query("UPDATE users SET created_by=?,updated_by=? WHERE id=?", [
+                $id,
+                $id,
+                $id,
+            ]);
+            audit(
+                "register",
+                "user",
+                $id,
+                "ลงทะเบียนรออนุมัติ",
+                null,
+                ["username" => $username],
+                $id,
+            );
+        });
+    } catch (PDOException $e) {
+        if (($e->errorInfo[1] ?? null) === 1062) {
             throw new ValidationException(
-                "ชื่อผู้ใช้นี้ไม่สามารถใช้ได้ กรุณาเลือกชื่ออื่น",
+                "ข้อมูลบัญชีนี้ไม่สามารถใช้ได้ กรุณาตรวจสอบหรือติดต่อ Super Admin",
             );
         }
-        query(
-            <<<'SQL'
-            INSERT INTO users(username,
-                name,
-                position,
-                phone,
-                password_hash,
-                role,
-                state)
-            VALUES(?,
-                ?,
-                ?,
-                ?,
-                ?,
-                'officer',
-                'pending')
-            SQL,
-            [
-                $username,
-                $name,
-                $position,
-                $phone,
-                password_hash($password, PASSWORD_DEFAULT),
-            ],
-        );
-        $id = (int) db()->lastInsertId();
-        query("UPDATE users SET created_by=?,updated_by=? WHERE id=?", [$id, $id, $id]);
-        audit(
-            "register",
-            "user",
-            $id,
-            "ลงทะเบียนรออนุมัติ",
-            null,
-            ["username" => $username],
-            $id,
-        );
-    });
+        throw $e;
+    }
     flash("ลงทะเบียนแล้ว กรุณารอ Super Admin อนุมัติ");
     redirect("login");
 }

@@ -2,6 +2,7 @@
 // เลือกหน้าจอตามชื่อ page ที่ index.php ตรวจสิทธิ์แล้ว; ไฟล์ views มีหน้าที่แสดง HTML
 defined("APP_ENTRY") || exit();
 require __DIR__ . "/auth.php";
+require __DIR__ . "/profile.php";
 require __DIR__ . "/records.php";
 require __DIR__ . "/admin.php";
 require __DIR__ . "/settings.php";
@@ -21,6 +22,8 @@ function render_content(string $page): void
         "cancel_form" => period_form_view("cancel"),
         "reports" => reports_view(),
         "users" => users_view(),
+        "profile" => profile_view(),
+        "user_profile" => profile_view(true),
         "settings" => settings_view(),
         "audit" => audit_view(),
         "help" => help_view(),

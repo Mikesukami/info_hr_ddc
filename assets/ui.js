@@ -49,6 +49,9 @@
                 : "กรุณาระบุ" + fieldLabel(field);
         }
         if (!value) return "";
+        if (field.name === "national_id" && !/^[0-9]{13}$/.test(value.trim())) {
+            return "เลขบัตรประชาชนต้องเป็นตัวเลข 13 หลัก ไม่ใส่ขีดหรือเว้นวรรค";
+        }
         if (field.hasAttribute("data-be-date")) {
             const date = parseDate(value);
             if (date === null)

@@ -61,6 +61,9 @@ function users_view(): void
             '<small class="subline">' .
             h($states[$u["state"]]) .
             '</small></td><td><div class="user-row-actions">';
+        if ($user["role"] === "superAdmin") {
+            echo '<a class="button" href="' . h(url("user_profile", ["id" => $u["id"]])) . '">แก้ข้อมูลส่วนตัว</a>';
+        }
         if ($user["role"] === "superAdmin" && $u["state"] === "pending") {
             echo form_start("user_decision") .
                 hidden("id", $u["id"]) .

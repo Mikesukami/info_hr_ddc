@@ -8,6 +8,7 @@ try {
     require __DIR__ . "/app/auth.php";
     require __DIR__ . "/app/records.php";
     require __DIR__ . "/app/references.php";
+    require __DIR__ . "/app/user_profiles.php";
     require __DIR__ . "/app/view_helpers.php";
     require __DIR__ . "/app/views/content.php";
     require __DIR__ . "/app/export.php";
@@ -55,6 +56,12 @@ try {
                     break;
                 case "password":
                     change_password_action();
+                    break;
+                case "profile_save":
+                    profile_save_action();
+                    break;
+                case "user_profile_save":
+                    profile_save_action(true);
                     break;
                 case "logout":
                     audit("logout", "user", actor(), "ออกจากระบบ");
@@ -137,6 +144,8 @@ try {
             $_SESSION["old"] = array_filter($old, fn($v) => is_scalar($v));
             flash($e->getMessage(), "error");
             $back = match ($action) {
+                "profile_save" => "profile",
+                "user_profile_save" => "user_profile",
                 "case_save" => "case_form",
                 "period_save" => "period_form",
                 "return_save" => "return_form",
@@ -150,6 +159,9 @@ try {
                 default => $action,
             };
             $params = [];
+            if ($action === "user_profile_save" && is_scalar($_POST["id"] ?? null)) {
+                $params["id"] = (int) $_POST["id"];
+            }
             if (
                 in_array($action, ["reference_create", "reference_active"], true) &&
                 is_string($_POST["group"] ?? null) &&

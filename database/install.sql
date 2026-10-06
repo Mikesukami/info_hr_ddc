@@ -2,13 +2,20 @@
 CREATE DATABASE IF NOT EXISTS study_leave CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 USE study_leave;
 -- Select/create the database with utf8mb4_general_ci before importing this file.
--- Schema v2: org hierarchy and country references. Fresh installation only; never import over existing tables.
+-- Schema v3: user profiles. Fresh installation only; never import over existing tables.
 SET NAMES utf8mb4 COLLATE utf8mb4_general_ci;
 
 CREATE TABLE users (
  id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
  username VARCHAR(80) NOT NULL UNIQUE,
  name VARCHAR(200) NOT NULL,
+ title VARCHAR(50) NOT NULL DEFAULT '',
+ first_name VARCHAR(80) NOT NULL DEFAULT '',
+ last_name VARCHAR(80) NOT NULL DEFAULT '',
+ national_id CHAR(13) NULL,
+ email VARCHAR(254) NOT NULL DEFAULT '',
+ org_id BIGINT UNSIGNED NULL,
+ profile_version INT UNSIGNED NOT NULL DEFAULT 1,
  position VARCHAR(200) NOT NULL,
  phone VARCHAR(30) NOT NULL,
  password_hash VARCHAR(255) NOT NULL,
@@ -25,7 +32,8 @@ CREATE TABLE users (
  FOREIGN KEY(created_by) REFERENCES users(id),
  FOREIGN KEY(updated_by) REFERENCES users(id),
  FOREIGN KEY(approved_by) REFERENCES users(id),
- INDEX ix_users_state(state,id)
+ INDEX ix_users_state(state,id),
+ UNIQUE KEY uq_users_national_id(national_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 CREATE TABLE activity_types (
@@ -56,6 +64,10 @@ CREATE TABLE reference_values (
  INDEX ix_reference_parent(parent_id,active),
  FOREIGN KEY(created_by) REFERENCES users(id), FOREIGN KEY(updated_by) REFERENCES users(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- users มาก่อน reference_values จึงเพิ่ม FK เมื่อสร้างทั้งสองตารางแล้ว
+ALTER TABLE users ADD CONSTRAINT fk_users_org
+ FOREIGN KEY(org_id) REFERENCES reference_values(id);
 
 CREATE TABLE leave_cases (
  id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
