@@ -136,6 +136,9 @@
         const month = shown.getUTCMonth();
         monthSelect.value = String(month);
         yearSelect.value = String(year);
+        // อัปเดตข้อความของ Dropdown ที่ตกแต่ง โดยไม่ส่ง change ซ้ำจนวน render
+        monthSelect.dispatchEvent(new Event("dropdown:sync"));
+        yearSelect.dispatchEvent(new Event("dropdown:sync"));
         announcement.textContent = `${months[month]} ${year + 543}`;
         previous.disabled = year === minimumYear && month === 0;
         next.disabled = year === maximumYear && month === 11;

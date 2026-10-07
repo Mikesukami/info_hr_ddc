@@ -29,6 +29,19 @@
     cursor: pointer;
     list-style: none;
     border-radius: 6px;
+    transition:
+        background-color 180ms ease,
+        color 180ms ease;
+}
+.nav-group > .nav {
+    background: #15142155;
+    border-radius: 8px;
+}
+.nav-group.nav-animating > .nav {
+    overflow: hidden;
+}
+.nav-group[data-nav-expanded="false"] > summary .nav-chevron {
+    transform: rotate(45deg);
 }
 .nav-group > summary::-webkit-details-marker,
 .account-menu > summary::-webkit-details-marker {
@@ -46,7 +59,7 @@
     transform: rotate(45deg);
     margin-left: auto;
     flex-shrink: 0;
-    transition: transform 180ms ease;
+    transition: transform 260ms cubic-bezier(0.2, 0, 0, 1);
 }
 details[open] > summary .nav-chevron {
     transform: rotate(225deg);
@@ -57,6 +70,10 @@ details[open] > summary .nav-chevron {
 .sidebar .nav a {
     padding: 9px 10px;
     font-size: 15px;
+    transition:
+        background-color 180ms ease,
+        color 180ms ease,
+        box-shadow 180ms ease;
 }
 .sidebar-bottom {
     padding-top: 16px;
@@ -66,13 +83,15 @@ details[open] > summary .nav-chevron {
     margin-top: 16px;
     padding-top: 12px;
 }
-.nav-group[open] .group-request-count {
+.nav-group[data-nav-expanded="true"] .group-request-count,
+.nav-group[open]:not([data-nav-expanded]) .group-request-count {
     display: none;
 }
 .nav-group .group-request-count {
     margin-left: auto;
 }
-.nav-group:not([open]) .group-request-count + .nav-chevron {
+.nav-group[data-nav-expanded="false"] .group-request-count + .nav-chevron,
+.nav-group:not([open]):not([data-nav-expanded]) .group-request-count + .nav-chevron {
     margin-left: 0;
 }
 .account-menu {

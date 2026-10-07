@@ -44,30 +44,32 @@ function settings_view(): void
             </p>
         <?php endif; ?>
         <?= form_start("reference_create") . hidden("group", $group) ?>
-            <div class="form-grid">
-                <?= input_field("ชื่อรายการ", "label") ?>
-                <?php if ($group === "org"): ?>
-                    <label>อยู่ภายใต้
-                        <select name="parent_id" data-searchable>
-                            <option value="">ไม่มีหน่วยงานแม่ — เพิ่มเป็นสำนัก/กอง</option>
-                            <?php foreach ($tree as $org): ?>
-                                <?php if (
-                                    $org["available"] &&
-                                    (int) $org["org_depth"] < 5
-                                ): ?>
-                                    <option value="<?= (int) $org["id"] ?>"<?= selected(
-    old("parent_id"),
-    $org["id"],
-) ?>>
-                                        <?= h($org["path"]) ?>
-                                    </option>
-                                <?php endif; ?>
-                            <?php endforeach; ?>
-                        </select>
-                    </label>
-                <?php endif; ?>
+            <div class="reference-create-layout">
+                <div class="form-grid">
+                    <?= input_field("ชื่อรายการ", "label") ?>
+                    <?php if ($group === "org"): ?>
+                        <label>อยู่ภายใต้
+                            <select name="parent_id" data-searchable>
+                                <option value="">ไม่มีหน่วยงานแม่ — เพิ่มเป็นสำนัก/กอง</option>
+                                <?php foreach ($tree as $org): ?>
+                                    <?php if (
+                                        $org["available"] &&
+                                        (int) $org["org_depth"] < 5
+                                    ): ?>
+                                        <option value="<?= (int) $org["id"] ?>"
+                                            <?= selected(old("parent_id"), $org["id"]) ?>>
+                                            <?= h($org["path"]) ?>
+                                        </option>
+                                    <?php endif; ?>
+                                <?php endforeach; ?>
+                            </select>
+                        </label>
+                    <?php endif; ?>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="primary">เพิ่มรายการ</button>
+                </div>
             </div>
-            <div class="form-actions"><button type="submit" class="primary">เพิ่มรายการ</button></div>
         </form>
     </section>
     <?php
@@ -154,14 +156,18 @@ function activity_settings_view(): void
     <section class="panel">
         <h2>เพิ่มประเภทการบันทึก</h2>
         <?= form_start("type_save") ?>
-            <div class="form-grid">
-                <?= input_field("ชื่อประเภทใหม่", "name", "", "text", true, 120) ?>
-                <?= select_field("แบบฟอร์ม", "form_kind", [
-                    "study" => "การศึกษา",
-                    "course" => "หลักสูตร / สถานที่",
-                ]) ?>
+            <div class="reference-create-layout">
+                <div class="form-grid">
+                    <?= input_field("ชื่อประเภทใหม่", "name", "", "text", true, 120) ?>
+                    <?= select_field("แบบฟอร์ม", "form_kind", [
+                        "study" => "การศึกษา",
+                        "course" => "หลักสูตร / สถานที่",
+                    ]) ?>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="primary">เพิ่มประเภท</button>
+                </div>
             </div>
-            <div class="form-actions"><button class="primary">เพิ่มประเภท</button></div>
         </form>
     </section>
     <?php $data = page_data("activity_types", "", [], "*", "id"); ?>

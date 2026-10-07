@@ -1,0 +1,142 @@
+/* เฉพาะหน้าข้อมูลอ้างอิง: ลดช่องว่างและวางปุ่มเพิ่มใกล้ช่องกรอก */
+.settings-page .main {
+    padding-top: 22px;
+}
+.settings-page .page-intro {
+    margin-bottom: 16px;
+}
+.settings-page .eyebrow {
+    margin-bottom: 5px;
+}
+.settings-page .page-intro h1 {
+    font-size: 28px;
+}
+.settings-page .page-intro p {
+    margin-top: 5px;
+    font-size: 14px;
+}
+.settings-page .reference-tabs {
+    gap: 6px;
+    margin-bottom: 14px;
+}
+.settings-page .reference-tabs .button {
+    min-height: 36px;
+    padding: 6px 12px;
+    font-size: 13px;
+}
+.settings-page .panel {
+    padding: 16px;
+    margin-bottom: 14px;
+}
+.settings-page .panel h2 {
+    font-size: 19px;
+    margin-bottom: 6px;
+}
+.settings-page .section-copy {
+    margin: 0 0 10px;
+    font-size: 14px;
+    line-height: 1.6;
+}
+.reference-create-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 12px;
+    align-items: start;
+}
+.settings-page .reference-create-layout .form-grid {
+    gap: 12px;
+    margin: 6px 0 0;
+}
+.reference-create-layout .form-grid > label:only-child {
+    grid-column: 1 / -1;
+}
+.settings-page .reference-create-layout .form-actions {
+    margin: 0;
+    padding-top: 33px;
+    border: 0;
+}
+.settings-page label {
+    font-size: 14px;
+    line-height: 1.6;
+}
+.settings-page input:not([type="hidden"]):not([type="checkbox"]),
+.settings-page select,
+.settings-page .search-select-trigger {
+    min-height: 40px;
+    padding: 7px 12px;
+    font-size: 14px;
+    line-height: 1.6;
+}
+.settings-page select,
+.settings-page .search-select-trigger {
+    padding-right: 38px;
+}
+.settings-page .panel .button,
+.settings-page .panel button:not(.search-select-trigger) {
+    min-height: 40px;
+    padding: 7px 12px;
+    font-size: 14px;
+}
+.settings-page .reference-filter {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(150px, 1fr) auto auto;
+    gap: 10px;
+    padding: 12px;
+    margin-bottom: 12px;
+}
+.settings-page .reference-filter label {
+    min-width: 0;
+}
+.settings-page .server-table th,
+.settings-page .server-table td {
+    font-size: 14px;
+    line-height: 1.55;
+    padding: 8px 12px;
+}
+.settings-page .server-table .subline {
+    font-size: 12px;
+    margin-top: 3px;
+}
+.settings-page .server-table .badge {
+    font-size: 12px;
+    padding: 4px 9px;
+}
+.settings-page .panel .server-table button {
+    min-height: 32px;
+    font-size: 13px;
+    padding: 4px 10px;
+}
+@media (max-width: 1000px) {
+    .reference-create-layout {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 8px;
+    }
+    .settings-page .reference-create-layout .form-actions {
+        padding-top: 0;
+    }
+}
+@media (max-width: 650px) {
+    .settings-page .main {
+        padding-top: 16px;
+    }
+    .settings-page .panel {
+        padding: 12px;
+    }
+    .settings-page .page-intro h1 {
+        font-size: 24px;
+    }
+    .settings-page .reference-filter {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        padding: 10px;
+    }
+    .settings-page .reference-filter label {
+        grid-column: 1 / -1;
+    }
+    /* ช่องบนมือถือยังอ่านง่ายและแตะได้ โดยไม่ย่ออักษรขณะกรอก */
+    .settings-page input:not([type="hidden"]):not([type="checkbox"]),
+    .settings-page select,
+    .settings-page .search-select-trigger {
+        min-height: 44px;
+        font-size: 16px;
+    }
+}

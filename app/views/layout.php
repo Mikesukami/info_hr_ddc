@@ -48,14 +48,14 @@ $pendingUserRequests = pending_user_requests();
     <link rel="stylesheet" href="assets/app.css">
     <link rel="stylesheet" href="assets/server.css?v=2">
     <link rel="stylesheet" href="assets/ui.css?v=4">
-    <link rel="stylesheet" href="assets/navigation.css?v=1">
-    <script src="assets/navigation.js?v=2" defer></script>
+    <link rel="stylesheet" href="assets/navigation.css?v=2">
+    <script src="assets/navigation.js?v=3" defer></script>
     <script src="assets/app.js?v=4" defer></script>
     <script src="assets/ui.js?v=7" defer></script>
     <link rel="stylesheet" href="assets/be-datepicker.css?v=1">
-    <script src="assets/be-datepicker.js?v=1" defer></script>
+    <script src="assets/be-datepicker.js?v=2" defer></script>
     <link rel="stylesheet" href="assets/select-search.css?v=1">
-    <script src="assets/select-search.js?v=1" defer></script>
+    <script src="assets/select-search.js?v=2" defer></script>
     <?php if ($useAuthTheme): ?>
         <link rel="stylesheet" href="assets/login.css?v=10">
     <?php endif; ?>
@@ -66,13 +66,16 @@ $pendingUserRequests = pending_user_requests();
     <?php if ($page === "audit"): ?>
         <link rel="stylesheet" href="assets/audit.css?v=2">
     <?php endif; ?>
-    <link rel="stylesheet" href="assets/dropdown.css?v=1">
+    <link rel="stylesheet" href="assets/dropdown.css?v=2">
+    <?php if ($page === "settings"): ?>
+        <link rel="stylesheet" href="assets/reference-settings.css?v=1">
+    <?php endif; ?>
     <?php if (in_array($page, ["case_form", "period_form", "return_form", "cancel_form"], true)): ?>
         <link rel="stylesheet" href="assets/leave-fields.css?v=4">
         <script src="assets/leave-fields.js?v=3" defer></script>
     <?php endif; ?>
 </head>
-<body<?= $useAuthTheme ? ' class="login-page' . ($page === "register" ? ' register-page' : '') . '"' : "" ?>>
+<body<?= $useAuthTheme ? ' class="login-page' . ($page === "register" ? ' register-page' : '') . '"' : ($page === "settings" ? ' class="settings-page"' : "") ?>>
 <a class="skip" href="#main">ข้ามไปยังเนื้อหา</a>
 
 <?php if ($useAuthTheme): ?>
