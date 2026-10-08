@@ -123,6 +123,14 @@
                 ?.innerText.trim()
                 .replace(/\n+/g, " / ") || "";
         const subject = name ? `รายการ: ${name}\n` : "";
+        if (["reference_delete", "type_delete"].includes(action))
+            return {
+                title: "ยืนยันลบข้อมูลอ้างอิงถาวร?",
+                text:
+                    subject +
+                    "รายการนี้จะถูกลบออกจากฐานข้อมูลและกู้คืนผ่านหน้าจอไม่ได้\nระบบจะไม่ลบรายการที่ถูกใช้งานหรือมีหน่วยงานย่อย กรุณาตรวจสอบชื่อก่อนยืนยัน",
+                danger: true,
+            };
         if (action === "user_state") {
             const state = form.elements.namedItem("state");
             return {
@@ -298,6 +306,9 @@
                 acceptButton.classList.toggle("danger", Boolean(confirm.danger));
                 pending = () => {
                     confirmed = true;
+                    const deleteConfirmation =
+                        form.elements.namedItem("delete_confirmed");
+                    if (deleteConfirmation) deleteConfirmation.value = "1";
                     // requestSubmit เก็บ name/value ของปุ่ม เช่น อนุมัติ/ไม่อนุมัติครบถ้วน
                     try {
                         form.requestSubmit(event.submitter || undefined);

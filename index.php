@@ -93,6 +93,12 @@ try {
                 case "type_active":
                     type_active_action();
                     break;
+                case "reference_delete":
+                    reference_delete_action();
+                    break;
+                case "type_delete":
+                    reference_delete_action(true);
+                    break;
                 case "user_decision":
                     user_decision_action();
                     break;
@@ -153,6 +159,8 @@ try {
                 "type_save",
                 "type_active",
                 "reference_create",
+                "reference_delete",
+                "type_delete",
                 "reference_active"
                     => "settings",
                 "user_decision", "user_state", "issue_reset" => "users",
@@ -163,13 +171,13 @@ try {
                 $params["id"] = (int) $_POST["id"];
             }
             if (
-                in_array($action, ["reference_create", "reference_active"], true) &&
+                in_array($action, ["reference_create", "reference_active", "reference_delete"], true) &&
                 is_string($_POST["group"] ?? null) &&
                 isset(REFERENCE_GROUPS[$_POST["group"]])
             ) {
                 $params["group"] = $_POST["group"];
             }
-            if (in_array($action, ["type_save", "type_active"], true)) {
+            if (in_array($action, ["type_save", "type_active", "type_delete"], true)) {
                 $params["group"] = "activity";
             }
             if (

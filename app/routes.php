@@ -47,6 +47,8 @@ return [
         "type_active" => $admins,
         "reference_create" => $admins,
         "reference_active" => $admins,
+        "reference_delete" => $superAdmin,
+        "type_delete" => $superAdmin,
         "user_decision" => $superAdmin,
         "user_state" => $superAdmin,
         "issue_reset" => $superAdmin,

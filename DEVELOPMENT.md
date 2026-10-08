@@ -142,6 +142,14 @@ users เก็บ title, first_name, last_name, national_id, email, org_id แ�
 name ยังคงเป็นชื่อเต็มสำหรับจุดแสดงผลเดิมและประวัติ ทุกครั้งที่บันทึกโปรไฟล์จะประกอบจากสามช่องชื่อ
 ผู้ใช้เดิมมีช่องแยกชื่อว่างไว้ก่อน ไม่เดาแยกจาก name เพราะคำนำหน้าและชื่ออาจมีหลายคำ
 org_id อ้างอิง reference_values; บริการตรวจว่าตรงกลุ่ม org และเป็นระดับสำนัก/กองด้วย
+
+การลบข้อมูลอ้างอิง: `reference_delete` และ `type_delete` ใน app/routes.php ให้เฉพาะ superAdmin
+index.php ตรวจสิทธิ์และ CSRF แล้วเรียก reference_delete_action() ใน app/references.php
+action ล็อกแถว ตรวจรายการที่ใช้งานและหน่วยงานลูก แล้ว DELETE พร้อม audit ใน transaction เดียว
+หากเขียนประวัติไม่สำเร็จจะ rollback การลบ; Foreign Key ยังป้องกันการลบแถวที่ถูกใช้
+หลักสูตรใน leave_cases เก็บชื่อเป็น snapshot จึงตรวจ course เทียบ label เพิ่มด้วย
+ปุ่มอยู่ app/views/settings.php และใช้ modal ร่วมใน assets/ui.js ก่อนส่ง delete_confirmed=1
+ค่านี้ยืนยันขั้นตอน UI เท่านั้น สิทธิ์และ CSRF ฝั่ง PHP เป็นตัวป้องกันจริง
 profile_version ใช้ตรวจการแก้ไขพร้อมกัน แยกจาก session_version ซึ่งใช้ยกเลิก session
 profile_save ใช้ id จากผู้ใช้ที่เข้าสู่ระบบเท่านั้น ไม่เชื่อ id ที่ส่งใน POST
 UPDATE ระบุเฉพาะช่องส่วนตัว จึงไม่สามารถเปลี่ยนสิทธิ์/สถานะจากฟอร์มนี้

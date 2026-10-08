@@ -280,3 +280,83 @@ function type_active_action(): void
     flash("เปลี่ยนสถานะประเภทแล้ว");
     redirect("settings", ["group" => "activity"]);
 }
+
+/** ลบเฉพาะข้อมูลอ้างอิงที่ยังไม่ถูกใช้ ไม่ลบต่อเนื่องไปยังแฟ้มหรือหน่วยงานลูก */
+function reference_delete_action(bool $activity = false): void
+{
+    allowed(["superAdmin"]);
+    if (($_POST["delete_confirmed"] ?? null) !== "1") {
+        throw new ValidationException(
+            "กรุณายืนยันการลบในหน้าต่างยืนยันก่อน หากไม่แสดงให้เปิด JavaScript",
+        );
+    }
+    $id = positive_id($_POST["id"] ?? null);
+    $group = $activity ? "activity" : reference_group($_POST["group"] ?? null);
+    // ชื่อตารางและคอลัมน์มาจากโค้ดเท่านั้น ค่าจากฟอร์มใช้ parameter เสมอ
+    $table = $activity ? "activity_types" : "reference_values";
+    try {
+        transaction(function () use ($id, $group, $table, $activity): void {
+            $value = row("SELECT * FROM $table WHERE id = ? FOR UPDATE", [$id]);
+            if (!$value || (!$activity && $value["group_name"] !== $group)) {
+                throw new ValidationException("ไม่พบรายการในกลุ่มข้อมูลอ้างอิงนี้ อาจถูกลบไปแล้ว");
+            }
+            if (
+                !$activity &&
+                row("SELECT id FROM reference_values WHERE parent_id = ? LIMIT 1", [$id])
+            ) {
+                throw new ValidationException(
+                    "ลบไม่ได้ เพราะมีหน่วยงานย่อยอยู่ กรุณาจัดการหน่วยงานย่อยก่อน หรือใช้ปิดใช้งานแทน",
+                );
+            }
+            $fields = $activity ? ["type_id"] : match ($group) {
+                "org" => ["org_id"],
+                "personnel" => ["personnel_type_id"],
+                "position" => ["position_id"],
+                "level" => ["level_id"],
+                "country" => ["country_id"],
+                default => [],
+            };
+            foreach ($fields as $field) {
+                if (row("SELECT id FROM leave_cases WHERE $field = ? LIMIT 1", [$id])) {
+                    throw new ValidationException(
+                        "ลบไม่ได้ เพราะรายการนี้ถูกใช้ในทะเบียนการลาแล้ว กรุณาปิดใช้งานแทน",
+                    );
+                }
+            }
+            if (
+                $group === "org" &&
+                row("SELECT id FROM users WHERE org_id = ? LIMIT 1", [$id])
+            ) {
+                throw new ValidationException(
+                    "ลบไม่ได้ เพราะมีผู้ใช้งานสังกัดหน่วยงานนี้ กรุณาปิดใช้งานแทน",
+                );
+            }
+            // หลักสูตรเก็บชื่อเป็น snapshot ไม่ได้เก็บ course_id จึงต้องตรวจชื่อด้วย
+            if (
+                $group === "course" &&
+                row("SELECT id FROM leave_cases WHERE course = ? LIMIT 1", [$value["label"]])
+            ) {
+                throw new ValidationException(
+                    "ลบไม่ได้ เพราะหลักสูตรนี้ถูกใช้ในทะเบียนการลาแล้ว กรุณาปิดใช้งานแทน",
+                );
+            }
+            query("DELETE FROM $table WHERE id = ?", [$id]);
+            audit(
+                $activity ? "type_deleted" : "reference_deleted",
+                $activity ? "activity_type" : "reference",
+                $id,
+                "ลบข้อมูลอ้างอิงถาวร: " . ($value["label"] ?? $value["name"]),
+                $value,
+                null,
+            );
+        });
+    } catch (PDOException $error) {
+        // Foreign Key เป็นด่านสุดท้าย รวมกรณีมีคนเริ่มใช้รายการพร้อมกับการลบ
+        if (($error->errorInfo[1] ?? null) === 1451) {
+            throw new ValidationException("ลบไม่ได้ เพราะรายการนี้ยังถูกอ้างอิงอยู่ กรุณาปิดใช้งานแทน");
+        }
+        throw $error;
+    }
+    flash("ลบข้อมูลอ้างอิงถาวรแล้ว");
+    redirect("settings", ["group" => $group]);
+}

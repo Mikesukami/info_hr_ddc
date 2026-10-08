@@ -1,4 +1,23 @@
 /* เฉพาะหน้าข้อมูลอ้างอิง: ลดช่องว่างและวางปุ่มเพิ่มใกล้ช่องกรอก */
+.reference-row-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+.reference-row-actions form {
+    margin: 0;
+}
+.settings-page .reference-delete {
+    color: #a0253a;
+    border-color: #e4bbc4;
+    background: #fff7f8;
+}
+.settings-page .reference-delete:hover {
+    color: #82192d;
+    border-color: #bd6a7c;
+    background: #fce9ed;
+}
 .settings-page .main {
     padding-top: 22px;
 }

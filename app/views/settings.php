@@ -128,6 +128,7 @@ function settings_view(): void
                             <?php endif; ?>
                             <td><?= active_badge((bool) $item["active"]) ?></td>
                             <td>
+                                <div class="reference-row-actions">
                                 <?= form_start("reference_active") .
                                     hidden("id", $item["id"]) .
                                     hidden("group", $group) .
@@ -136,6 +137,8 @@ function settings_view(): void
                                         ? "ปิดใช้งาน"
                                         : "เปิดใช้งาน" ?></button>
                                 </form>
+                                <?= reference_delete_form((int) $item["id"], $group, $item["label"]) ?>
+                                </div>
                             </td>
                         </tr>
                     <?php endforeach; ?>
@@ -184,6 +187,7 @@ function activity_settings_view(): void
                                 : "หลักสูตร / สถานที่" ?></td>
                             <td><?= active_badge((bool) $type["active"]) ?></td>
                             <td>
+                                <div class="reference-row-actions">
                                 <?= form_start("type_active") .
                                     hidden("id", $type["id"]) .
                                     hidden("active", $type["active"] ? "0" : "1") ?>
@@ -191,6 +195,8 @@ function activity_settings_view(): void
                                     ? "ปิดใช้งาน"
                                     : "เปิดใช้งาน" ?></button>
                                 </form>
+                                <?= reference_delete_form((int) $type["id"], "activity", $type["name"]) ?>
+                                </div>
                             </td>
                         </tr>
                     <?php endforeach; ?>
@@ -200,4 +206,16 @@ function activity_settings_view(): void
         <?php paginate($data); ?>
     </section>
     <?php
+}
+
+/** ปุ่มลบแสดงเฉพาะ Super Admin; สิทธิ์จริงตรวจซ้ำใน routes และ action */
+function reference_delete_form(int $id, string $group, string $label): string
+{
+    if (($GLOBALS["user"]["role"] ?? "") !== "superAdmin") {
+        return "";
+    }
+    return form_start($group === "activity" ? "type_delete" : "reference_delete") .
+        hidden("id", $id) . hidden("group", $group) . hidden("delete_confirmed", "0") .
+        '<button type="submit" class="reference-delete" aria-label="' . h("ลบ " . $label) .
+        '">ลบ</button></form>';
 }

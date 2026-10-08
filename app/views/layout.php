@@ -51,7 +51,7 @@ $pendingUserRequests = pending_user_requests();
     <link rel="stylesheet" href="assets/navigation.css?v=2">
     <script src="assets/navigation.js?v=3" defer></script>
     <script src="assets/app.js?v=4" defer></script>
-    <script src="assets/ui.js?v=7" defer></script>
+    <script src="assets/ui.js?v=8" defer></script>
     <link rel="stylesheet" href="assets/be-datepicker.css?v=1">
     <script src="assets/be-datepicker.js?v=2" defer></script>
     <link rel="stylesheet" href="assets/select-search.css?v=1">
@@ -68,7 +68,7 @@ $pendingUserRequests = pending_user_requests();
     <?php endif; ?>
     <link rel="stylesheet" href="assets/dropdown.css?v=2">
     <?php if ($page === "settings"): ?>
-        <link rel="stylesheet" href="assets/reference-settings.css?v=1">
+        <link rel="stylesheet" href="assets/reference-settings.css?v=2">
     <?php endif; ?>
     <?php if (in_array($page, ["case_form", "period_form", "return_form", "cancel_form"], true)): ?>
         <link rel="stylesheet" href="assets/leave-fields.css?v=4">
