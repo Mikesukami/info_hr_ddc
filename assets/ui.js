@@ -359,10 +359,6 @@
         document.querySelectorAll("form[aria-busy]").forEach(resetBusy);
     });
 
-    // แจ้งผลจาก PHP ไว้จนผู้ใช้เปลี่ยนหน้า เพื่อให้อ่านทัน ไม่ปิดอัตโนมัติ
-    const serverError = document.querySelector(".flash-notice.error-notice");
-    if (serverError) {
-        serverError.tabIndex = -1;
-        serverError.focus();
-    }
+    // ผลการทำรายการจาก PHP แสดงผ่าน notifications.js;
+    // ข้อผิดพลาดรายช่องและสรุปการตรวจฟอร์มยังจัดการในไฟล์นี้
 })();

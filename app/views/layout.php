@@ -51,7 +51,9 @@ $pendingUserRequests = pending_user_requests();
     <link rel="stylesheet" href="assets/navigation.css?v=2">
     <script src="assets/navigation.js?v=3" defer></script>
     <script src="assets/app.js?v=4" defer></script>
-    <script src="assets/ui.js?v=8" defer></script>
+    <script src="assets/ui.js?v=9" defer></script>
+    <link rel="stylesheet" href="assets/notifications.css?v=1">
+    <script src="assets/notifications.js?v=1" defer></script>
     <link rel="stylesheet" href="assets/be-datepicker.css?v=1">
     <script src="assets/be-datepicker.js?v=2" defer></script>
     <link rel="stylesheet" href="assets/select-search.css?v=1">
@@ -219,10 +221,16 @@ $pendingUserRequests = pending_user_requests();
     <?php
     $f = $_SESSION["flash"];
     unset($_SESSION["flash"]);
+    $notificationError = $f["kind"] === "error";
     ?>
-    <div class="notice flash-notice <?= $f["kind"] === "error" ? "error-notice" : "success-notice" ?>"
-         role="<?= $f["kind"] === "error" ? "alert" : "status" ?>">
-        <?= h($f["text"]) ?>
+    <div class="notice flash-notice <?= $notificationError ? "error-notice" : "success-notice" ?>"
+         role="<?= $notificationError ? "alert" : "status" ?>" aria-atomic="true">
+        <span class="notification-icon" aria-hidden="true"><?= $notificationError ? "!" : icon("check") ?></span>
+        <div class="notification-copy">
+            <strong><?= $notificationError ? "ทำรายการไม่สำเร็จ" : "ดำเนินการเรียบร้อย" ?></strong>
+            <p><?= h($f["text"]) ?></p>
+        </div>
+        <button type="button" class="notification-close" aria-label="ปิดการแจ้งเตือน" hidden>×</button>
     </div>
 <?php endif; ?>
 
