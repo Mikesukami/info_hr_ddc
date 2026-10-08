@@ -54,6 +54,10 @@ $pendingUserRequests = pending_user_requests();
     <script src="assets/ui.js?v=9" defer></script>
     <link rel="stylesheet" href="assets/notifications.css?v=1">
     <script src="assets/notifications.js?v=1" defer></script>
+    <?php if (in_array($page, ["registry", "ledger"], true)): ?>
+        <link rel="stylesheet" href="assets/record-pagination.css?v=1">
+        <script src="assets/record-pagination.js?v=1" defer></script>
+    <?php endif; ?>
     <link rel="stylesheet" href="assets/be-datepicker.css?v=1">
     <script src="assets/be-datepicker.js?v=2" defer></script>
     <link rel="stylesheet" href="assets/select-search.css?v=1">

@@ -1,0 +1,46 @@
+/* เฉพาะแถบจำนวนข้อมูลของทะเบียน ไม่เปลี่ยนขนาดแถวหรือองค์ประกอบอื่น */
+.record-count-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 12px;
+    font-size: 12px;
+    color: #64627d;
+    margin: 10px 0;
+}
+.record-size-form,
+.record-size-form label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    font-size: 12px;
+}
+.record-size-form .search-select {
+    width: 100px;
+    margin: 0;
+}
+.record-size-form select,
+.record-size-form .search-select-trigger {
+    width: 100px;
+    margin: 0;
+    min-height: 34px;
+    padding: 5px 30px 5px 10px;
+    font-size: 13px;
+    background-color: #f5f4ff;
+    color: #4943a8;
+    border-color: #dcd9f3;
+}
+.record-size-form .search-select-trigger::after {
+    right: 8px;
+}
+.table-footer .record-count-controls {
+    margin: 0;
+}
+@media (max-width: 650px) {
+    .record-size-form select,
+    .record-size-form .search-select-trigger {
+        min-height: 40px;
+        font-size: 16px;
+    }
+}

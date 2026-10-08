@@ -188,13 +188,19 @@ function page_data(
     array $params,
     string $select = "*",
     string $order = "id DESC",
+    bool $recordSizes = false,
 ): array {
     $requestedSize = (int) (is_scalar($_GET["size"] ?? null) ? $_GET["size"] : 10);
-    $size = in_array($requestedSize, [10, 25, 50, 100], true) ? $requestedSize : 10;
+    $choices = $recordSizes ? [5, 10, 25, 50, 100, 2000] : [10, 25, 50, 100];
+    $size = in_array($requestedSize, $choices, true) ? $requestedSize : 10;
+    $all = $recordSizes && ($_GET["size"] ?? null) === "all";
     $total = (int) query(
         "SELECT COUNT(*) FROM " . $from . $where,
         $params,
     )->fetchColumn();
+    if ($all) {
+        $size = max(1, $total);
+    }
     $pages = max(1, (int) ceil($total / $size));
     $page = max(1, min($pages, (int) (is_scalar($_GET["p"] ?? null) ? $_GET["p"] : 1)));
     $offset = ($page - 1) * $size;
@@ -208,6 +214,7 @@ function page_data(
         "pages" => $pages,
         "size" => $size,
         "offset" => $offset,
+        "size_choice" => $all ? "all" : $size,
     ];
 }
 
@@ -228,6 +235,7 @@ function record_listing(bool $ledger = false): array
                 ",e.note AS entry_note"
             : "s.*",
         $ledger ? "e.received_date DESC,e.id DESC" : "s.id DESC",
+        true,
     );
 }
 

@@ -37,12 +37,13 @@ function registry_view(bool $ledger): void
             '</div><label class="ledger-density-label">' .
             '<input type="checkbox" id="ledgerCompact"> แถวกระชับ</label>' .
             '<button type="button" id="ledgerDisplayReset">คืนค่าเดิม</button>' .
-            '<small>ปรับเฉพาะตารางนี้ · เลือกจำนวนต่อหน้าที่ตัวกรองด้านบน</small></div>';
+            '<small>ปรับเฉพาะตารางนี้ · เลือกจำนวนรายการที่แถบเหนือหรือใต้ตาราง</small></div>';
     }
+    record_count_controls($data);
     if (!$data["items"]) {
         echo '<div class="empty"><h2>ยังไม่มีรายการที่ตรงกับเงื่อนไข</h2><p>เพิ่มเรื่อ' .
             "งใหม่ หรือปรับคำค้นและตัวกรอง</p></div>";
-        paginate($data);
+        paginate($data, true);
         echo "</section>";
         return;
     }
@@ -150,7 +151,7 @@ function registry_view(bool $ledger): void
         echo "</td></tr>";
     }
     echo "</tbody></table></div>";
-    paginate($data);
+    paginate($data, true);
     echo "</section>";
 }
 

@@ -234,15 +234,45 @@ function active_badge(bool $active): string
         "</span>";
 }
 
-function paginate(array $data): void
+function record_count_controls(array $data): void
 {
-    echo '<nav class="table-footer" aria-label="แบ่งหน้า"><span>แสดง ' .
-        ($data["total"] ? $data["offset"] + 1 : 0) .
-        "–" .
-        min($data["offset"] + $data["size"], $data["total"]) .
-        " จาก " .
-        number_format($data["total"]) .
-        ' รายการ</span><div class="pagination">';
+    echo '<div class="record-count-controls"><form method="get" class="record-size-form">' .
+        hidden("page", $GLOBALS["page"]);
+    foreach (["q", "type", "year", "status"] as $key) {
+        if (is_scalar($_GET[$key] ?? null)) {
+            echo hidden($key, $_GET[$key]);
+        }
+    }
+    echo '<label><span class="record-size-label">รายการต่อหน้า</span><select name="size" aria-label="จำนวนรายการต่อหน้า">';
+    $choices = [
+        5 => "5", 10 => "10", 25 => "25", 50 => "50",
+        100 => "100", 2000 => "2,000", "all" => "ทั้งหมด",
+    ];
+    foreach ($choices as $value => $label) {
+        echo '<option value="' . h($value) . '"' .
+            selected($value, $data["size_choice"] ?? $data["size"]) . '>' . h($label) . '</option>';
+    }
+    echo '</select></label><noscript><button type="submit">แสดง</button></noscript></form><span>แสดง ' .
+        number_format($data["total"] ? $data["offset"] + 1 : 0) . "–" .
+        number_format(min($data["offset"] + $data["size"], $data["total"])) .
+        " จาก " . number_format($data["total"]) . ' รายการ</span></div>';
+}
+
+function paginate(array $data, bool $recordControls = false): void
+{
+    echo '<nav class="table-footer" aria-label="แบ่งหน้า">';
+    if ($recordControls) {
+        record_count_controls($data);
+    } else {
+        echo '<span>แสดง ' .
+            ($data["total"] ? $data["offset"] + 1 : 0) .
+            "–" .
+            min($data["offset"] + $data["size"], $data["total"]) .
+            " จาก " .
+            number_format($data["total"]) .
+            ' รายการ</span>';
+    }
+    echo '<div class="pagination">';
     $base = array_filter($_GET, fn($v) => is_scalar($v));
     unset($base["page"], $base["p"]);
     if ($data["page"] > 1) {
@@ -324,15 +354,9 @@ function filter_form(string $page): void
             h($label) .
             "</option>";
     }
-    echo '</select></label><label>จำนวนต่อหน้า<select name="size">';
-    foreach ([10, 25, 50, 100] as $size) {
-        echo "<option" .
-            selected($size, $values["size"] ?? 10) .
-            ">" .
-            $size .
-            "</option>";
-    }
-    echo '</select></label><div class="filter-actions"><button class="primary">' .
+    $sizeChoice = ($values["size"] ?? "") === "all" ? "all" :
+        (in_array((int) ($values["size"] ?? 10), [5, 10, 25, 50, 100, 2000], true) ? (int) ($values["size"] ?? 10) : 10);
+    echo '</select></label>' . hidden("size", $sizeChoice) . '<div class="filter-actions"><button class="primary">' .
         icon("search") .
         'ค้นหา</button><a class="button" href="' .
         h(url($page)) .
