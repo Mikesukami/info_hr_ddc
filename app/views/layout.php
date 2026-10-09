@@ -80,6 +80,8 @@ $pendingUserRequests = pending_user_requests();
         <link rel="stylesheet" href="assets/leave-fields.css?v=4">
         <script src="assets/leave-fields.js?v=3" defer></script>
     <?php endif; ?>
+    <!-- ขนาดพื้นที่ทำงานและแสงช่องกรอก โหลดหลังรูปแบบเฉพาะหน้า -->
+    <link rel="stylesheet" href="assets/density.css?v=1">
 </head>
 <body<?= $useAuthTheme ? ' class="login-page' . ($page === "register" ? ' register-page' : '') . '"' : ($page === "settings" ? ' class="settings-page"' : "") ?>>
 <a class="skip" href="#main">ข้ามไปยังเนื้อหา</a>

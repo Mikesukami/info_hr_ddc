@@ -1,0 +1,115 @@
+/* ขนาดพื้นที่ทำงาน: ลดพื้นที่ว่าง โดยรักษาตาราง Excel และฟอร์ม floating label เดิม */
+.shell .main {
+    padding: 22px 24px 20px;
+    font-size: 14px;
+}
+.shell .page-intro {
+    gap: 14px;
+    margin-bottom: 18px;
+}
+.shell .page-intro h1 { font-size: 27px; line-height: 1.4; }
+.shell .page-intro p { font-size: 14px; margin: 6px 0 0; }
+.shell .eyebrow { font-size: 10px; margin-bottom: 6px; letter-spacing: 1px; }
+.shell h2 { font-size: 20px; }
+.shell h3 { font-size: 17px; }
+.shell .panel { padding: 18px; margin-bottom: 16px; }
+.shell .metrics { gap: 10px; margin-bottom: 18px; }
+.shell .metric:nth-child(n) { padding: 12px 16px !important; border-radius: 9px; }
+.shell .metric-label { font-size: 13px; }
+.shell .metric-value {
+    font-family: inherit;
+    font-size: 28px;
+    font-weight: 500;
+    line-height: 1.3;
+    letter-spacing: 0;
+    font-variant-numeric: tabular-nums;
+    margin-top: 4px;
+}
+.shell .metric-value span { font-family: inherit; font-size: 12px; font-weight: 400; margin-left: 6px; }
+.shell .metric small { font-size: 11px; margin-top: 2px; }
+.shell .filter-form { padding: 12px; gap: 10px; margin-bottom: 16px; }
+.shell .filter-form label { font-size: 13px; }
+.shell .filter-form input,
+.shell .filter-form select,
+.shell .filter-form .search-select-trigger {
+    min-height: 40px;
+    padding-top: 7px;
+    padding-bottom: 7px;
+    font-size: 14px;
+}
+.shell .filter-form .search-select { margin-top: 4px; }
+.shell .button:not(.compact),
+.shell .filter-actions button {
+    min-height: 40px;
+    padding: 7px 12px;
+    font-size: 14px;
+}
+.shell .form-section { padding: 16px; margin-bottom: 18px; }
+.shell .form-grid { gap: 16px 20px; }
+.shell .form-actions { padding-top: 14px; margin-top: 14px; }
+.shell .nav a { font-size: 14px; padding: 10px 12px; }
+.shell .footnote { margin-top: 20px; padding-top: 14px; }
+.shell .listing-panel .server-table:not(.ledger-table) th,
+.shell .listing-panel .server-table:not(.ledger-table) td {
+    padding: 10px 12px;
+    font-size: 14px;
+}
+.shell .listing-panel .server-table:not(.ledger-table) .person { font-size: 14px; }
+.shell .listing-panel .server-table:not(.ledger-table) .subline { font-size: 12px; }
+.shell .listing-panel .server-table:not(.ledger-table) .badge { font-size: 12px; padding: 3px 9px; }
+
+/* จอใหญ่: ตัวกรองและปุ่มอยู่แถวเดียวกัน ลดการเสียพื้นที่อีกหนึ่งแถว */
+@media (min-width: 1280px) {
+    .shell .filter-form {
+        grid-template-columns: minmax(220px, 2fr) repeat(3, minmax(130px, 1fr)) auto;
+    }
+}
+@media (max-width: 700px) {
+    .shell .main { padding: 18px 14px; }
+    .shell .panel { padding: 14px; }
+    .shell .page-intro h1 { font-size: 24px; }
+    .shell .page-intro .actions { margin-top: 12px; }
+    .shell .metric:nth-child(n) { padding: 12px !important; }
+    .shell .metric-value { font-size: 26px; }
+    /* คงขนาดสัมผัสและตัวอักษรช่องกรอกบนมือถือให้อ่าน/แตะได้สะดวก */
+    .shell .filter-form input,
+    .shell .filter-form select,
+    .shell .filter-form .search-select-trigger { min-height: 44px; font-size: 16px; }
+    .shell .button:not(.compact),
+    .shell .filter-actions button { min-height: 44px; }
+}
+
+/* ขอบเรืองแสงแบบในตัวอย่าง: เปลี่ยนเงาอย่างนุ่มนวล ไม่มีการกระพริบหรือขยายช่อง */
+body {
+    --field-hover-border: #9185d5;
+    --field-hover-shadow: 0 0 0 2px #7763c410, 0 2px 9px #7763c416;
+    --field-focus-border: #6b58bb;
+    --field-focus-shadow: 0 0 0 3px #7763c41a, 0 2px 12px #7763c41c;
+}
+body.login-page {
+    --field-hover-border: #9a8cdd;
+    --field-hover-shadow: 0 0 0 2px #a28dea12, 0 0 12px #a28dea1c;
+    --field-focus-border: #b3a2f4;
+    --field-focus-shadow: 0 0 0 3px #a28dea20, 0 0 14px #a28dea26;
+}
+body :is(input, textarea, select, .search-select-trigger):not([type="hidden"]):not([type="checkbox"]):not([type="radio"]):not(.search-select-native) {
+    transition: border-color 240ms ease, box-shadow 240ms ease, background-color 180ms ease;
+}
+@media (hover: hover) {
+    body :is(input, textarea, select, .search-select-trigger):not([type="hidden"]):not([type="checkbox"]):not([type="radio"]):not(.search-select-native):not(:disabled):not([readonly]):not([aria-invalid="true"]):hover {
+        border-color: var(--field-hover-border);
+        box-shadow: var(--field-hover-shadow);
+    }
+}
+body :is(input, textarea, select, .search-select-trigger):not([type="hidden"]):not([type="checkbox"]):not([type="radio"]):not(.search-select-native):not(:disabled):not([readonly]):not([aria-invalid="true"]):focus,
+body .search-select-trigger:not(:disabled):not([aria-invalid="true"])[aria-expanded="true"] {
+    border-color: var(--field-focus-border);
+    box-shadow: var(--field-focus-shadow);
+}
+/* สีแจ้งข้อมูลผิดยังเป็นสีแดง แม้ช่องกำลัง focus อยู่ */
+body :is(input, textarea, select, .search-select-trigger)[aria-invalid="true"]:focus {
+    box-shadow: 0 0 0 2px #b12d431a;
+}
+@media (prefers-reduced-motion: reduce) {
+    body :is(input, textarea, select, .search-select-trigger) { transition: none; }
+}
