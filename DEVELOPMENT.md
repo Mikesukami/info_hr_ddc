@@ -155,3 +155,21 @@ profile_save ใช้ id จากผู้ใช้ที่เข้าสู
 UPDATE ระบุเฉพาะช่องส่วนตัว จึงไม่สามารถเปลี่ยนสิทธิ์/สถานะจากฟอร์มนี้
 national_id มี UNIQUE ในฐานข้อมูล และบริการแปลงกรณีข้อมูลซ้ำเป็นข้อความที่ผู้ใช้เข้าใจได้
 ประวัติ user_profile_updated เก็บ changed_fields เท่านั้น ไม่ทำสำเนาเลขบัตรหรือข้อมูลติดต่อ
+# หน้าแจ้งข้อผิดพลาด
+
+- `app/error_page.php`: ฟังก์ชัน `abort_page(status, message)` หยุดการทำงานและแสดงหน้า error; `render_error_page()` ใช้ใน catch
+- `app/views/error.php` และ `assets/error-page.css`: HTML และรูปแบบของหน้า error ไม่เชื่อมฐานข้อมูล
+- `error.php`: จุดรับ error จากเว็บเซิร์ฟเวอร์ รองรับ 401, 403, 404, 405, 422, 429, 500 และ 503
+- `.htaccess`: เส้นทางที่ไม่มีไฟล์จริงส่งไปหน้า 404; กฎป้องกันไฟล์ระบบยังคงเดิม
+
+กรณี Apache ปฏิเสธคำขอก่อนถึง PHP (เช่น เปิดไฟล์ config โดยตรง) หากต้องการใช้หน้าเดียวกัน ให้เพิ่ม ErrorDocument ใน `.htaccess` โดยใช้ path เว็บที่ติดตั้งจริง ตัวอย่างเมื่อโฟลเดอร์ชื่อ `study leave`:
+
+```apache
+ErrorDocument 401 /study%20leave/error.php
+ErrorDocument 403 /study%20leave/error.php
+ErrorDocument 404 /study%20leave/error.php
+ErrorDocument 500 /study%20leave/error.php
+ErrorDocument 503 /study%20leave/error.php
+```
+
+หากย้ายไป `info_hr_ddc` ให้เปลี่ยน prefix เป็น `/info_hr_ddc/`; หากติดตั้งที่ root domain ใช้ `/error.php` โดยตรง ไม่ใช้ URL เต็ม เพราะต้องรักษารหัส HTTP เดิม การล่มของ Apache/PHP เองต้องกำหนด error page ที่เว็บเซิร์ฟเวอร์เพิ่มเติม

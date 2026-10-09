@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 define("APP_ENTRY", true);
+require_once __DIR__ . "/app/error_page.php";
 // จุดเริ่มของทุกหน้า: โหลดฟังก์ชัน -> ตรวจผู้ใช้ -> แยก GET/POST -> แสดงผล
 try {
     // 1. ตั้งค่า PDO/session และโหลดส่วนทำงาน (ยังไม่แสดง HTML)
@@ -23,8 +24,7 @@ try {
     if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $action = is_string($_POST["action"] ?? null) ? $_POST["action"] : "";
         if (!array_key_exists($action, $actions)) {
-            http_response_code(404);
-            exit("ไม่พบการทำรายการนี้");
+            abort_page(404, "ไม่พบการทำรายการนี้");
         }
         if ($actions[$action] !== null) {
             if (!$user) {
@@ -212,9 +212,7 @@ try {
     }
     // 4. GET คือเปิดหน้า: ตรวจสิทธิ์ก่อนเรียก view หรือส่งออก CSV
     if ($_SERVER["REQUEST_METHOD"] !== "GET") {
-        http_response_code(405);
-        header("Allow: GET, POST");
-        exit();
+        abort_page(405);
     }
     $page = is_string($_GET["page"] ?? null)
         ? $_GET["page"]
@@ -222,8 +220,7 @@ try {
             ? "registry"
             : "login");
     if (!in_array($page, $public, true) && !isset($roles[$page])) {
-        http_response_code(404);
-        exit("ไม่พบหน้าที่ระบุ");
+        abort_page(404, "ไม่พบหน้าที่ระบุ");
     }
     if (isset($roles[$page])) {
         if (!$user) {
@@ -252,16 +249,11 @@ try {
     if (http_response_code() === 200) {
         http_response_code(422);
     }
-    echo '<!doctype html><html lang="th"><meta charset="utf-8"><title>ไม่สามารถเปิดรายการ</title><p>' .
-        htmlspecialchars($e->getMessage(), ENT_QUOTES, "UTF-8") .
-        '</p><a href="index.php">กลับหน้าหลัก</a></html>';
+    render_error_page(http_response_code(), $e->getMessage());
 } catch (Throwable $e) {
     if (ob_get_level()) {
         ob_end_clean();
     }
     error_log("Application failure: " . get_class($e) . " code " . $e->getCode());
-    http_response_code(503);
-    echo '<!doctype html><html lang="th"><meta charset="utf-8"><title>ระบบยังไม่พร' .
-        "้อม</title><p>ระบบไม่สามารถทำรายการได้ในขณะนี้ กรุณาติดต่อผู้ดูแลเพื่อตร" .
-        'วจการติดตั้งหรือฐานข้อมูล</p><a href="index.php">ลองใหม่</a></html>';
+    render_error_page(503);
 }

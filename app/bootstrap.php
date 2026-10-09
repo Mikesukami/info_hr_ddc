@@ -2,14 +2,14 @@
 // ส่วนกลาง: เชื่อม PDO ด้วย db(), อ่านด้วย row()/rows(), เขียนด้วย query(); รวม session, CSRF และ validation
 declare(strict_types=1);
 defined("APP_ENTRY") || exit();
+require_once __DIR__ . "/error_page.php";
 date_default_timezone_set("Asia/Bangkok");
 ini_set("display_errors", "0");
 ini_set("log_errors", "1");
 ini_set("error_log", __DIR__ . "/../storage/app.log");
 $configFile = __DIR__ . "/../config/local.php";
 if (!is_file($configFile)) {
-    http_response_code(503);
-    exit("ไม่พบไฟล์ตั้งค่า config/local.php กรุณาตรวจไฟล์ระบบตามคู่มือ README.md");
+    abort_page(503, "ไม่พบไฟล์ตั้งค่า config/local.php กรุณาตรวจไฟล์ระบบตามคู่มือ README.md");
 }
 $config = require $configFile;
 header("Content-Type: text/html; charset=utf-8");
@@ -29,8 +29,7 @@ if (
     $config["secure_cookies"] &&
     ($_SERVER["HTTPS"] ?? "") !== "on"
 ) {
-    http_response_code(503);
-    exit("ระบบนี้กำหนดให้เข้าใช้งานผ่าน HTTPS เท่านั้น");
+    abort_page(503, "ระบบนี้กำหนดให้เข้าใช้งานผ่าน HTTPS เท่านั้น");
 }
 if ($config["secure_cookies"]) {
     header("Strict-Transport-Security: max-age=31536000");
@@ -133,8 +132,7 @@ function verify_csrf(): void
         !is_string($_POST["csrf"] ?? null) ||
         !hash_equals($_SESSION["csrf"], $_POST["csrf"])
     ) {
-        http_response_code(403);
-        exit("คำขอไม่ถูกต้องหรือหมดอายุ กรุณาเปิดหน้าใหม่");
+        abort_page(403, "คำขอไม่ถูกต้องหรือหมดอายุ กรุณาเปิดหน้าใหม่");
     }
 }
 
@@ -151,8 +149,7 @@ function is_admin(): bool
 function allowed(array $roles): void
 {
     if (!in_array($GLOBALS["user"]["role"] ?? "", $roles, true)) {
-        http_response_code(403);
-        exit("403 — คุณไม่มีสิทธิ์เข้าถึงหน้านี้หรือทำรายการนี้");
+        abort_page(403, "คุณไม่มีสิทธิ์เข้าถึงหน้านี้หรือทำรายการนี้");
     }
 }
 

@@ -41,8 +41,7 @@ function profile_view(bool $editOther = false): void
     $profile = row("SELECT * FROM users WHERE id=?", [$id]);
     if (!$profile) {
         http_response_code(404);
-        echo '<section class="panel">ไม่พบบัญชีผู้ใช้</section>';
-        return;
+        throw new ValidationException("ไม่พบบัญชีผู้ใช้");
     }
     heading(
         $editOther ? "แก้ไขข้อมูลผู้ใช้งาน" : "ข้อมูลส่วนตัว",

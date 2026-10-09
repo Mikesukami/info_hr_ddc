@@ -8,3 +8,7 @@ RewriteRule ^(?:app|config|database|storage)(?:/|$) - [F,L,NC]
 <IfModule mod_headers.c>
     Header always set X-Content-Type-Options "nosniff"
 </IfModule>
+# เส้นทางที่ไม่มีไฟล์จริง: แสดงหน้า 404 กลาง โดยไม่เปลี่ยนกฎป้องกันด้านบน
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ error.php?status=404 [END]
