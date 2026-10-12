@@ -1,4 +1,20 @@
 /* ขนาดพื้นที่ทำงาน: ลดพื้นที่ว่าง โดยรักษาตาราง Excel และฟอร์ม floating label เดิม */
+.record-delete-form { display: inline-flex; margin: 0 0 0 8px; }
+.case-delete-tools { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 16px; }
+.case-delete-tools .record-delete-form { margin: 0; }
+.case-delete-tools small { color: #6a697e; }
+.period-heading { flex-wrap: wrap; gap: 8px; justify-content: flex-start; }
+.period-heading > strong { margin-right: auto; }
+.record-delete-form .button {
+    color: #a02b43;
+    border-color: #ecc3ca;
+    background: #fff6f8;
+}
+.record-delete-form .button:hover {
+    color: #8f2038;
+    border-color: #dca1ae;
+    background: #fcebf0;
+}
 .shell .main {
     padding: 22px 24px 20px;
     font-size: 14px;

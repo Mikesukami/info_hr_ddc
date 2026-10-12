@@ -132,6 +132,8 @@ function filters(bool $ledger = false): array
             "s.org_name",
             "s.branch",
             "s.course",
+            "s.course_batch",
+            "CONCAT(s.course, ' · รุ่นที่ ', s.course_batch)",
             "s.institution",
             "s.location",
             "s.country",
@@ -239,6 +241,36 @@ function record_listing(bool $ledger = false): array
     );
 }
 
+/** ชื่อหลักสูตรสำหรับแสดงผล; ข้อมูลเก่าที่ไม่มีรุ่นยังแสดงชื่อเดิม */
+function course_display(array $r): string
+{
+    $batch = trim((string) ($r["course_batch"] ?? ""));
+    return $r["course"] . ($batch !== "" ? " · รุ่นที่ " . $batch : "");
+}
+
+/** จัดกลุ่มด้วยรหัสหลักสูตร; แฟ้มเก่าที่ยังไม่จับคู่ใช้ชื่อเดิมเป็นกลุ่มแยก */
+function course_report_sql(bool $byBatch): string
+{
+    $batchSelect = $byBatch ? "c.course_batch" : "''";
+    $batchGroup = $byBatch ? ", c.course_batch" : "";
+    return <<<'SQL'
+        SELECT e.fiscal_year,
+        c.course_id,
+        COALESCE(MAX(r.label), MAX(c.course)) AS course_name,
+        SQL
+        . " $batchSelect AS course_batch, " .
+        <<<'SQL'
+        COUNT(DISTINCT c.id) AS case_count
+        FROM leave_cases c
+        JOIN activity_types t ON t.id=c.type_id AND t.form_kind='course'
+        JOIN record_entries e ON e.case_id=c.id AND e.kind='period'
+        LEFT JOIN reference_values r ON r.id=c.course_id
+        GROUP BY e.fiscal_year, c.course_id,
+        CASE WHEN c.course_id IS NULL THEN c.course ELSE '' END
+        SQL
+        . $batchGroup;
+}
+
 function entry_subject(array $r): string
 {
     $title =
@@ -252,7 +284,7 @@ function entry_subject(array $r): string
                     $r["institution"],
                 ]),
             )
-            : $r["course"] . " · " . $r["location"];
+            : course_display($r) . " · " . $r["location"];
     $prefix = match ($r["kind"]) {
         "return" => "รายงานตัวกลับ " . be_date($r["action_date"]),
         "cancel" => "ยกเลิกเรื่อง " . be_date($r["action_date"]),
@@ -298,19 +330,21 @@ function metadata_input(array $existing = []): array
             : null;
     $data["fund"] = text_input("fund", 200, false);
     foreach (
-        ["degree", "branch", "faculty", "institution", "course", "location"]
+        ["degree", "branch", "faculty", "institution", "location"]
         as $key
     ) {
         $needed =
             $type["form_kind"] === "study"
                 ? in_array($key, ["degree", "branch", "faculty", "institution"], true)
-                : in_array($key, ["course", "location"], true);
-        $data[$key] = !$needed
-            ? ""
-            : ($key === "course"
-                ? course_reference_input($existing)
-                : text_input($key));
+                : $key === "location";
+        $data[$key] = $needed ? text_input($key) : "";
     }
+    $data += $type["form_kind"] === "course"
+        ? course_reference_input($existing)
+        : ["course_id" => null, "course" => ""];
+    $data["course_batch"] = $type["form_kind"] === "course"
+        ? text_input("course_batch", 50, false)
+        : "";
     $data["note"] = text_input("note", 2000, false);
     return $data;
 }
@@ -393,6 +427,94 @@ function touch_case(int $id): void
         SQL,
         [actor(), $id],
     );
+}
+
+/**
+ * ลบข้อมูลผิดพลาดเฉพาะ Super Admin: ตรวจ CSRF ที่ index.php อีกชั้น
+ * ล็อกแฟ้มและ revision เช่นเดียวกับการแก้ไข บันทึก audit ใน transaction เดียวกัน
+ * ไม่ลบ audit_logs; เก็บ snapshot ของข้อมูลที่ลบสำหรับการตรวจย้อนหลัง
+ */
+function record_delete_action(bool $wholeCase = false): void
+{
+    allowed(["superAdmin"]);
+    if (($_POST["delete_confirmed"] ?? "") !== "1") {
+        throw new ValidationException("กรุณายืนยันการลบก่อนดำเนินการ");
+    }
+    $caseId = positive_id($_POST["case_id"] ?? null);
+    $entryId = $wholeCase ? null : positive_id($_POST["entry_id"] ?? null);
+
+    transaction(function () use ($caseId, $entryId, $wholeCase): void {
+        $case = lock_case($caseId);
+        $entries = rows(
+            "SELECT * FROM record_entries WHERE case_id=? ORDER BY id FOR UPDATE",
+            [$caseId],
+        );
+        if ($wholeCase) {
+            query("DELETE FROM record_entries WHERE case_id=?", [$caseId]);
+            query("DELETE FROM leave_cases WHERE id=?", [$caseId]);
+            audit(
+                "case_deleted",
+                "case",
+                $caseId,
+                "ลบทั้งแฟ้ม " . case_code($case) . " · " . $case["person_name"],
+                ["case" => $case, "entries" => $entries],
+            );
+            return;
+        }
+
+        $target = null;
+        $periodCount = 0;
+        foreach ($entries as $entry) {
+            if ((int) $entry["id"] === $entryId) {
+                $target = $entry;
+            }
+            if ($entry["kind"] === "period") {
+                $periodCount++;
+            }
+        }
+        if (!$target) {
+            throw new ValidationException("ไม่พบรายการในแฟ้มนี้ อาจถูกลบไปแล้ว");
+        }
+        if ($target["kind"] === "period" && $periodCount <= 1) {
+            throw new ValidationException(
+                "ลบช่วงการลาสุดท้ายไม่ได้ หากบันทึกทั้งเรื่องผิด ให้ใช้ลบทั้งแฟ้มแทน",
+            );
+        }
+        if ($target["kind"] === "period") {
+            $remainingStarts = [];
+            $returnDate = null;
+            foreach ($entries as $entry) {
+                if ($entry["kind"] === "period" && (int) $entry["id"] !== $entryId) {
+                    $remainingStarts[] = $entry["start_date"];
+                }
+                if ($entry["kind"] === "return") {
+                    $returnDate = $entry["action_date"];
+                }
+            }
+            if ($returnDate !== null && $returnDate < min($remainingStarts)) {
+                throw new ValidationException(
+                    "ลบช่วงนี้ไม่ได้ เพราะวันรายงานตัวกลับจะอยู่ก่อนช่วงที่เหลือ กรุณาแก้ไขหรือลบรายงานตัวกลับก่อน",
+                );
+            }
+        }
+        // เก็บหมายเลข No. และลำดับช่วงที่เหลือเดิม ไม่เปลี่ยนเลขประวัติของรายการอื่น
+        query("DELETE FROM record_entries WHERE id=? AND case_id=?", [$entryId, $caseId]);
+        touch_case($caseId);
+        $label = match ($target["kind"]) {
+            "return" => "รายงานตัวกลับ",
+            "cancel" => "ยกเลิกเรื่อง",
+            default => "ช่วงการลาที่ " . $target["ordinal"],
+        };
+        audit(
+            "entry_deleted",
+            "case",
+            $caseId,
+            "ลบ" . $label . " No. " . $entryId . " · " . case_code($case),
+            ["case" => $case, "entry" => $target],
+        );
+    });
+    flash($wholeCase ? "ลบแฟ้มและรายการในแฟ้มแล้ว" : "ลบรายการแล้ว ระบบคำนวณสถานะจากข้อมูลที่เหลือใหม่");
+    redirect($wholeCase ? "registry" : "detail", $wholeCase ? [] : ["id" => $caseId]);
 }
 /**
  * บันทึกแฟ้มพร้อมช่วงแรกใน transaction เดียวกัน

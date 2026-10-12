@@ -115,21 +115,21 @@ function reference_field(
     return select_field($label, $name, $choices, $value, true);
 }
 
-function course_reference_field(string $current = ""): string
+function course_reference_field(string $current = "", ?int $currentId = null): string
 {
     $choices = ["" => "เลือกหลักสูตร / เรื่อง"];
     $selected = "";
     foreach (
         rows(
             "SELECT id,label,active FROM reference_values
-         WHERE group_name='course' AND (active=1 OR label=?) ORDER BY label,id",
-            [$current],
+         WHERE group_name='course' AND (active=1 OR id=? OR label=?) ORDER BY label,id",
+            [$currentId, $current],
         )
         as $item
     ) {
         $choices[$item["id"]] =
             $item["label"] . ($item["active"] ? "" : " (ปิดใช้งาน — ค่าเดิม)");
-        if ($item["label"] === $current) {
+        if ($currentId !== null ? (int) $item["id"] === $currentId : $item["label"] === $current) {
             $selected = $item["id"];
         }
     }
@@ -137,8 +137,7 @@ function course_reference_field(string $current = ""): string
         $choices["legacy"] = $current . " (ชื่อเดิมในแฟ้ม)";
         $selected = "legacy";
     }
-    return select_field("ชื่อหลักสูตร / เรื่อง", "course_id", $choices, $selected, true) .
-        '<p class="field-hint full">ไม่พบหลักสูตรที่ต้องการ? ให้ Admin หรือ Super Admin เพิ่มที่ข้อมูลอ้างอิง → หลักสูตรฝึกอบรม / เรื่อง</p>';
+    return select_field("ชื่อหลักสูตร / เรื่อง", "course_id", $choices, $selected, true);
 }
 
 function textarea_field(
@@ -171,6 +170,30 @@ function form_start(string $action): string
         '">' .
         csrf() .
         hidden("action", $action);
+}
+
+/** ปุ่มลบมีเฉพาะ Super Admin; ยังต้องตรวจสิทธิ์ซ้ำใน action ฝั่งเซิร์ฟเวอร์ */
+function record_delete_form(array $case, ?array $entry = null): string
+{
+    if (($GLOBALS["user"]["role"] ?? "") !== "superAdmin") {
+        return "";
+    }
+    $label = $entry === null ? "ลบทั้งแฟ้ม" : match ($entry["kind"]) {
+        "return" => "ลบรายงานตัวกลับ",
+        "cancel" => "ลบการยกเลิก",
+        default => "ลบช่วงนี้",
+    };
+    $html = form_start($entry === null ? "case_delete" : "entry_delete");
+    $html = str_replace('class="app-form"', 'class="app-form record-delete-form"', $html);
+    $html .= hidden("case_id", $case["id"]) . hidden("revision", $case["revision"]) .
+        hidden("delete_confirmed", "0");
+    if ($entry !== null) {
+        $html .= hidden("entry_id", $entry["id"]) . hidden("entry_kind", $entry["kind"]);
+    }
+    return $html . '<button type="submit" class="button compact danger-quiet" data-delete-label="' .
+        h(case_code($case) . " · " . $case["person_name"] .
+            ($entry !== null ? " · No. " . $entry["id"] : "")) . '">' .
+        h($label) . '</button></form>';
 }
 
 function form_end(string $submit, string $back = "registry", array $params = []): string

@@ -119,7 +119,7 @@ function registry_view(bool $ledger): void
                 " · " .
                 ($r["destination"] === "foreign" ? "ต่างประเทศ" : "ในประเทศ") .
                 "</span><div>" .
-                h($r["form_kind"] === "study" ? $r["branch"] : $r["course"]) .
+                h($r["form_kind"] === "study" ? $r["branch"] : course_display($r)) .
                 '</div><span class="subline">' .
                 h($r["form_kind"] === "study" ? $r["institution"] : $r["location"]) .
                 "</span></td><td>" .
@@ -147,6 +147,9 @@ function registry_view(bool $ledger): void
             echo '<a class="button compact" href="' .
                 h(url("detail", ["id" => $r["id"]])) .
                 '">เปิดแฟ้ม</a>';
+        }
+        if (!$ledger) {
+            echo record_delete_form($r);
         }
         echo "</td></tr>";
     }
@@ -237,6 +240,10 @@ function detail_view(): void
             '">ยกเลิกเรื่อง</a>';
     }
     heading($r["person_name"], case_code($r) . " · " . $r["type_name"], $actions);
+    if (($GLOBALS["user"]["role"] ?? "") === "superAdmin") {
+        echo '<div class="case-delete-tools">' . record_delete_form($r) .
+            '<small>ลบทั้งแฟ้มพร้อมช่วงการลา รายงานตัวกลับ และการยกเลิกในแฟ้มนี้</small></div>';
+    }
     echo '<section class="panel">' .
         badge_html($r["status"]) .
         '<dl class="detail-grid">';
@@ -256,7 +263,13 @@ function detail_view(): void
             "คณะ / มหาวิทยาลัย" => $r["faculty"] . " · " . $r["institution"],
         ];
     } else {
-        $fields += ["หลักสูตร" => $r["course"], "สถานที่" => $r["location"]];
+        $fields += [
+            "หลักสูตร" => $r["course"],
+            "รุ่น" => ($r["course_batch"] ?? "") !== ""
+                ? $r["course_batch"]
+                : "ไม่ระบุ",
+            "สถานที่" => $r["location"],
+        ];
     }
     $fields["หมายเหตุ"] = $r["note"];
     foreach ($fields as $key => $value) {
@@ -285,6 +298,7 @@ function detail_view(): void
                 h(url("return_form", ["id" => $r["id"], "entry_id" => $e["id"]])) .
                 '">แก้ไขรายงานตัวกลับ</a>';
         }
+        echo record_delete_form($r, $e);
         echo "</div><p>" .
             ($e["kind"] === "period"
                 ? h(be_date($e["start_date"]) . " – " . be_date($e["end_date"]))
@@ -378,7 +392,12 @@ function case_form_view(): void
     }
     echo '</div></fieldset><fieldset class="form-section" id="courseFields"><legen' .
         'd>02 / รายละเอียดหลักสูตร</legend><div class="form-grid">' .
-        course_reference_field($r["course"] ?? "") .
+        course_reference_field(
+            $r["course"] ?? "",
+            isset($r["course_id"]) ? (int) $r["course_id"] : null,
+        ) .
+        input_field("รุ่น (ไม่บังคับ)", "course_batch", $r["course_batch"] ?? "", "text", false, 50) .
+        '<p class="field-hint full">รุ่น เช่น 2, 2569/1 หรือ พิเศษ — ไม่ต้องพิมพ์ “รุ่นที่” และเว้นว่างได้ ไม่ต้องเพิ่มหลักสูตรใหม่สำหรับแต่ละรุ่น หากไม่พบหลักสูตร ให้ Admin หรือ Super Admin เพิ่มที่ข้อมูลอ้างอิง</p>' .
         input_field("สถานที่", "location", $r["location"] ?? "") .
         "</div></fieldset>";
     echo '<div id="typeKinds" hidden>';
@@ -464,6 +483,23 @@ function period_form_view(string $kind): void
 function reports_view(): void
 {
     heading("รายงานและสถิติ", "นับแฟ้มเรื่องต่อปีงบประมาณ เฉพาะช่วงการลา");
+    $mode = is_string($_GET["course_report"] ?? null)
+        ? $_GET["course_report"]
+        : "summary";
+    echo '<nav class="actions" aria-label="รูปแบบรายงาน">';
+    foreach ([
+        "summary" => "ภาพรวมรายปี",
+        "course" => "ฝึกอบรมแยกหลักสูตร",
+        "batch" => "ฝึกอบรมแยกรุ่น",
+    ] as $key => $label) {
+        echo '<a class="button' . ($mode === $key ? ' primary' : '') . '" href="' .
+            h(url("reports", ["course_report" => $key])) . '">' . h($label) . '</a>';
+    }
+    echo '</nav><br>';
+    if (in_array($mode, ["course", "batch"], true)) {
+        course_report_view($mode === "batch");
+        return;
+    }
     $from =
         "(SELECT e.fiscal_year,COUNT(DISTINCT e.case_id) case_count,COUNT(*) entr" .
         'y_count FROM record_entries e WHERE e.kind=\'period\' GROUP BY e.fiscal_ye' .
@@ -485,4 +521,31 @@ function reports_view(): void
     echo "</tbody></table></div>";
     paginate($data);
     echo "</section>";
+}
+
+/** จำนวนเรื่องฝึกอบรม: ไม่นับซ้ำเมื่อแฟ้มเดียวมีหลายช่วงในปีเดียวกัน */
+function course_report_view(bool $byBatch): void
+{
+    $data = page_data(
+        "(" . course_report_sql($byBatch) . ") training_report",
+        "",
+        [],
+        "*",
+        "fiscal_year DESC,course_name,course_batch",
+    );
+    echo '<section class="panel"><p class="section-copy">นับจำนวนเรื่อง ไม่ใช่จำนวนบุคลากรที่ไม่ซ้ำ หลักสูตรที่ยังไม่จับคู่แสดงชื่อเดิมแยกไว้</p>' .
+        '<div class="server-table-scroll"><table class="server-table"><thead><tr><th>ปีงบประมาณ</th><th>หลักสูตร</th>' .
+        ($byBatch ? '<th>รุ่น</th>' : '') . '<th>จำนวนเรื่อง</th></tr></thead><tbody>';
+    foreach ($data["items"] as $r) {
+        echo '<tr><td>' . h($r["fiscal_year"]) . '</td><td>' . h($r["course_name"]) .
+            ($r["course_id"] === null ? ' <span class="subline">ชื่อเดิม — ยังไม่จับคู่หลักสูตร</span>' : '') . '</td>' .
+            ($byBatch ? '<td>' . h($r["course_batch"] !== "" ? $r["course_batch"] : "ไม่ระบุ") . '</td>' : '') .
+            '<td>' . h($r["case_count"]) . '</td></tr>';
+    }
+    if (!$data["items"]) {
+        echo '<tr><td colspan="' . ($byBatch ? 4 : 3) . '">ยังไม่มีข้อมูลฝึกอบรม</td></tr>';
+    }
+    echo '</tbody></table></div>';
+    paginate($data);
+    echo '</section>';
 }

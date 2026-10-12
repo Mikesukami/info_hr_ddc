@@ -123,6 +123,20 @@
                 ?.innerText.trim()
                 .replace(/\n+/g, " / ") || "";
         const subject = name ? `รายการ: ${name}\n` : "";
+        if (["case_delete", "entry_delete"].includes(action)) {
+            const label = submitter?.dataset.deleteLabel || "";
+            const kind = form.elements.namedItem("entry_kind")?.value;
+            return {
+                title: action === "case_delete" ? "ยืนยันลบทั้งแฟ้มถาวร?" : "ยืนยันลบรายการนี้ถาวร?",
+                text: `${label}\n` + (action === "case_delete"
+                    ? "จะลบแฟ้มและช่วงการลา รายงานตัวกลับ และการยกเลิกทั้งหมดในแฟ้มนี้"
+                    : kind === "period"
+                        ? "จะลบเฉพาะช่วงนี้ โดยต้องเหลืออย่างน้อยหนึ่งช่วงในแฟ้ม"
+                        : "จะลบรายการปิดเรื่องนี้ สถานะจะคำนวณใหม่จากช่วงการลาที่เหลือ และสามารถบันทึกรายงานตัวกลับหรือยกเลิกใหม่ได้") +
+                    "\nกู้คืนผ่านหน้าจอไม่ได้ ประวัติการทำรายการยังเก็บไว้ กรุณาตรวจสอบก่อนยืนยัน",
+                danger: true,
+            };
+        }
         if (["reference_delete", "type_delete"].includes(action))
             return {
                 title: "ยืนยันลบข้อมูลอ้างอิงถาวร?",

@@ -17,23 +17,29 @@ const REFERENCE_GROUPS = [
 ];
 
 /** หลักสูตรเก็บชื่อในแฟ้มเป็น snapshot เพื่อไม่เปลี่ยนรายงานและประวัติเดิม */
-function course_reference_input(array $existing): string
+function course_reference_input(array $existing): array
 {
     $choice = $_POST["course_id"] ?? null;
     // ค่า legacy ใช้ได้เฉพาะชื่อเดิมที่อ่านจากฐานข้อมูล ไม่รับชื่อจาก POST
-    if ($choice === "legacy" && !empty($existing["course"])) {
-        return $existing["course"];
+    if ($choice === "legacy" && empty($existing["course_id"]) && !empty($existing["course"])) {
+        return ["course_id" => null, "course" => $existing["course"]];
     }
     $id = positive_id($choice);
     $course = row("SELECT * FROM reference_values WHERE id=?", [$id]);
     if (
         !$course ||
         $course["group_name"] !== "course" ||
-        (!$course["active"] && $course["label"] !== ($existing["course"] ?? ""))
+        (!$course["active"] && $id !== (int) ($existing["course_id"] ?? 0))
     ) {
         throw new ValidationException("กรุณาเลือกหลักสูตรที่เปิดใช้งานจากข้อมูลอ้างอิง");
     }
-    return $course["label"];
+    // รหัสใช้จัดกลุ่มรายงาน; ชื่อเป็น snapshot ของแฟ้ม ไม่เปลี่ยนชื่อเดิมเมื่อแก้ไขรุ่น
+    return [
+        "course_id" => $id,
+        "course" => $id === (int) ($existing["course_id"] ?? 0)
+            ? $existing["course"]
+            : $course["label"],
+    ];
 }
 
 function reference_group(mixed $value): string
@@ -314,6 +320,7 @@ function reference_delete_action(bool $activity = false): void
                 "position" => ["position_id"],
                 "level" => ["level_id"],
                 "country" => ["country_id"],
+                "course" => ["course_id"],
                 default => [],
             };
             foreach ($fields as $field) {

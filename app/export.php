@@ -69,6 +69,8 @@ function export_view(): never
         "วันเริ่ม (พ.ศ.)",
         "วันสิ้นสุด (พ.ศ.)",
         "วันรายงานตัว / ยกเลิก (พ.ศ.)",
+        "หลักสูตรฝึกอบรม",
+        "รุ่น",
     ];
     fputcsv($out, $head, ",", '"', "");
     while ($r = $stmt->fetch()) {
@@ -91,6 +93,8 @@ function export_view(): never
             be_date($r["start_date"]),
             be_date($r["end_date"]),
             be_date($r["action_date"]),
+            $r["form_kind"] === "course" ? $r["course"] : "",
+            $r["form_kind"] === "course" ? $r["course_batch"] : "",
         ];
         $cells = array_map(function ($v) {
             $s = (string) ($v ?? "");

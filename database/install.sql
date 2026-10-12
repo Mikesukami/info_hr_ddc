@@ -2,7 +2,7 @@
 CREATE DATABASE IF NOT EXISTS study_leave CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 USE study_leave;
 -- Select/create the database with utf8mb4_general_ci before importing this file.
--- Schema v3: user profiles. Fresh installation only; never import over existing tables.
+-- Schema v4: user profiles and course batches. Fresh installation only; never import over existing tables.
 SET NAMES utf8mb4 COLLATE utf8mb4_general_ci;
 
 CREATE TABLE users (
@@ -85,6 +85,8 @@ CREATE TABLE leave_cases (
  faculty VARCHAR(200) NOT NULL DEFAULT '',
  institution VARCHAR(200) NOT NULL DEFAULT '',
  course VARCHAR(200) NOT NULL DEFAULT '',
+ course_id BIGINT UNSIGNED NULL,
+ course_batch VARCHAR(50) COLLATE utf8mb4_general_ci NOT NULL DEFAULT '',
  location VARCHAR(200) NOT NULL DEFAULT '',
  note TEXT NOT NULL,
  revision INT UNSIGNED NOT NULL DEFAULT 1,
@@ -94,6 +96,7 @@ CREATE TABLE leave_cases (
  FOREIGN KEY(type_id) REFERENCES activity_types(id),
  FOREIGN KEY(org_id) REFERENCES reference_values(id),
  FOREIGN KEY(country_id) REFERENCES reference_values(id),
+ CONSTRAINT fk_cases_course FOREIGN KEY(course_id) REFERENCES reference_values(id),
  FOREIGN KEY(personnel_type_id) REFERENCES reference_values(id),
  FOREIGN KEY(position_id) REFERENCES reference_values(id),
  FOREIGN KEY(level_id) REFERENCES reference_values(id),

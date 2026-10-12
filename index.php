@@ -81,6 +81,12 @@ try {
                 case "cancel_save":
                     terminal_save_action("cancel");
                     break;
+                case "entry_delete":
+                    record_delete_action();
+                    break;
+                case "case_delete":
+                    record_delete_action(true);
+                    break;
                 case "type_save":
                     type_save_action();
                     break;
@@ -156,6 +162,8 @@ try {
                 "period_save" => "period_form",
                 "return_save" => "return_form",
                 "cancel_save" => "cancel_form",
+                "entry_delete" => "detail",
+                "case_delete" => "registry",
                 "type_save",
                 "type_active",
                 "reference_create",
@@ -167,6 +175,9 @@ try {
                 default => $action,
             };
             $params = [];
+            if ($action === "entry_delete" && is_scalar($_POST["case_id"] ?? null)) {
+                $params["id"] = (int) $_POST["case_id"];
+            }
             if ($action === "user_profile_save" && is_scalar($_POST["id"] ?? null)) {
                 $params["id"] = (int) $_POST["id"];
             }

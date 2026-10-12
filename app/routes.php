@@ -43,6 +43,8 @@ return [
         "period_save" => $staff,
         "return_save" => $staff,
         "cancel_save" => $staff,
+        "entry_delete" => $superAdmin,
+        "case_delete" => $superAdmin,
         "type_save" => $admins,
         "type_active" => $admins,
         "reference_create" => $admins,
